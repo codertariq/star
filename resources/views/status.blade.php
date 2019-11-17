@@ -1,0 +1,4 @@
+<img src="{{ asset('table_menu_loader.gif') }}" id="status_loading_{{$model->id}}"  style="display: none">
+<label class="form-check-label" id="status_{{$model->id}}" title="{{ $model->status == 1 ? __('service.status_online_to_offline') : __('service.status_offline_to_online') }}" data-popup="tooltip-custom" data-placement="bottom">
+	<input type="checkbox" class="form-check-status-switchery" id="change_status" data-id="{{ $model->id }}" data-status="{{ $model->status }}" @if(Route::has($status['route'].'destroy')) data-url="{{ route($status['route'].'destroy', [$model->id,'action' => 'status'] )}}" @endif {{ $model->status == 1 ? 'checked' : '' }} data-fouc >
+</label>
