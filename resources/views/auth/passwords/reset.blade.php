@@ -24,6 +24,7 @@
 				'data-parsley-required-message' => __('validation.required', ['attribute' => __('form.email')]),
 				'data-parsley-type-message' => __('validation.email', ['attribute' => __('form.email')]),
 				'required',
+				'data-parsley-trigger'=>"focusout",
 				!isset($email) ? 'autofocus' :''
 				]) }}
 				<div class="form-control-feedback">

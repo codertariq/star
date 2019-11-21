@@ -1,6 +1,6 @@
 @php
 //arrtibutes : form= true, false; modal= false, full, normal, lg, xs, sm; ;list = true, false
-$data['attribute'] = ['form' => true, 'list' => true, 'modal' => 'lg'];
+$data['attribute'] = ['form' => true, 'list' => true, 'modal' => 'full'];
 $data['breadcrumbs'] = 'role.index';
 $data['create'] = 'modal';
 $data['icon'] = 'icon-aid-kit';

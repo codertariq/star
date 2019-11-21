@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\Business;
+use App\Models\BusinessLocation;
+use App\Models\InvoiceLayout;
+use App\Models\InvoiceScheme;
 use App\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
@@ -39,5 +42,24 @@ class UsersTableSeeder extends Seeder {
 		]);
 
 		$user->assignRole($role->id);
+
+		$layout = InvoiceLayout::create([
+			'business_id' => $business->id,
+			'name' => 'Default',
+		]);
+		$scheme = InvoiceScheme::create([
+			'business_id' => $business->id,
+			'name' => 'Default',
+			'scheme_type' => 'year',
+		]);
+
+		BusinessLocation::create([
+			'business_id' => $business->id,
+			'name' => 'Satt Pos',
+			'landmark' => 'Talaimari',
+			'invoice_scheme_id' => $scheme->id,
+			'invoice_layout_id' => $layout->id,
+		]);
+
 	}
 }

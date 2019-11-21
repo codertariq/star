@@ -69,7 +69,6 @@ var FormHandle = function() {
                 }), 'warning', Lang.get('service.warning_title'));
                 return;
             }
-
             _componentValidation(form);
             _componentSubmit(form);
             hide_submit_loading();

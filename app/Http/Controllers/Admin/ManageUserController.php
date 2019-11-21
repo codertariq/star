@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ManageUserRequest;
 use App\Repositories\Admin\ManageUserRepositoriy;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -15,6 +16,7 @@ class ManageUserController extends Controller {
 		$this->request = $request;
 		$this->repo = $repo;
 	}
+
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -24,7 +26,7 @@ class ManageUserController extends Controller {
 		if ($this->request->ajax() and $this->request->get == 'datatable') {
 			return $this->repo->datatable();
 		}
-		return view('admin.user.index');
+		return view('admin.manage_user.index');
 	}
 
 	/**
@@ -33,7 +35,8 @@ class ManageUserController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function create() {
-		return view('admin.user.create');
+		$pre_requisite = $this->repo->preRequisite();
+		return view('admin.manage_user.create', $pre_requisite);
 	}
 
 	/**
@@ -42,8 +45,13 @@ class ManageUserController extends Controller {
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store(Request $request) {
-		//
+	public function store(ManageUserRequest $request) {
+		if (!auth()->user()->can('user.create')) {
+			abort(403, 'Unauthorized action.');
+		}
+
+		$this->repo->create($this->request->all());
+		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.user')])]);
 	}
 
 	/**

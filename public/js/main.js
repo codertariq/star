@@ -2,35 +2,36 @@ Lang.setLocale($('html').attr('lang'));
 paceOptions = {
     ajax: true,
 };
-
 Pace.start();
-
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
         'Access-Control-Allow-Origin': 'http://127.0.0.1:8000',
         'Access-Control-Allow-Origin': 'http://localhost:8000',
-
-
     }
 });
-
 var _componentPerfectScrollbar = function(v = '.modal-dialog-scrollable') {
     if (typeof PerfectScrollbar == 'undefined') {
         p_notify(Lang.get('service.not_loaded', {
             attribute: 'perfect_scrollbar.min.js'
         }), 'warning', 'Warning!!');
-
         return;
     }
-
     var ps = new PerfectScrollbar(v, {
         wheelSpeed: 5,
         wheelPropagation: true
     });
 };
-
-
+var _componentUniform = function() {
+    if (!$().uniform) {
+        p_notify(Lang.get('service.not_loaded', {
+            attribute: 'uniform.min.js'
+        }), 'warning', 'Warning!!');
+        return;
+    }
+    // Default initialization
+    $('.form-check-input-styled').uniform();
+};
 // Select2 for length menu styling
 var _componentDataTableSelect2 = function() {
     if (!$().select2) {
@@ -39,7 +40,6 @@ var _componentDataTableSelect2 = function() {
         }), 'warning', 'Warning!!');
         return;
     }
-
     // Initialize
     $('.dataTables_length select').select2({
         minimumResultsForSearch: Infinity,
@@ -47,18 +47,27 @@ var _componentDataTableSelect2 = function() {
         width: 'auto'
     });
 };
-
-
+var _componentSelect2 = function() {
+    if (!$().select2) {
+        p_notify(Lang.get('service.not_loaded', {
+            attribute: 'select2.min.js'
+        }), 'warning', 'Warning!!');
+        return;
+    }
+    // Initialize
+    $('.modal-content .select').select2({
+        dropdownAutoWidth: true,
+        dropdownParent: $("#content_modal .modal-content")
+    });
+};
 /*
  * Tooltip Custom Color
  */
-
 var _componentTooltipCustomColor = function() {
     $('[data-popup=tooltip-custom]').tooltip({
         template: '<div class="tooltip"><div class="arrow border-teal"></div><div class="tooltip-inner bg-teal"></div></div>'
     });
 };
-
 var _componentBootstrapSwitch = function() {
     if (!$().bootstrapSwitch) {
         p_notify(Lang.get('service.not_loaded', {
@@ -66,32 +75,27 @@ var _componentBootstrapSwitch = function() {
         }), 'warning', 'Warning!!');
         return;
     }
-
     // Initialize
     $('.form-input-switch').bootstrapSwitch();
 };
-
 /*
  * For Switchery input field
  */
-
 var _componentInputSwitchery = function() {
-    if (typeof Switchery == 'undefined') {
-        console.warn('Warning - switchery.min.js is not loaded.');
-        return;
+        if (typeof Switchery == 'undefined') {
+            console.warn('Warning - switchery.min.js is not loaded.');
+            return;
+        }
+        var input_elems = Array.prototype.slice.call(document.querySelectorAll('.form-check-input-switchery'));
+        if (input_elems.length > 0) {
+            input_elems.forEach(function(html) {
+                var switchery = new Switchery(html);
+            });
+        }
     }
-
-    var input_elems = Array.prototype.slice.call(document.querySelectorAll('.form-check-input-switchery'));
-    if (input_elems.length > 0) {
-        input_elems.forEach(function(html) {
-            var switchery = new Switchery(html);
-        });
-    }
-}
-
-/*
- * For Delete Item
- */
+    /*
+     * For Delete Item
+     */
 $(document).on('click', '#delete_item', function(e) {
     e.preventDefault();
     var row = $(this).data('id');
@@ -130,7 +134,6 @@ $(document).on('click', '#delete_item', function(e) {
             }
         });
 });
-
 $(document).on('click', '#change_status', function(e) {
     e.preventDefault();
     var row = $(this).data('id');
@@ -176,7 +179,6 @@ $(document).on('click', '#change_status', function(e) {
             }
         });
 });
-
 var _componentStatusSwitchery = function() {
     if (typeof Switchery == 'undefined') {
         p_notify(Lang.get('service.not_loaded', {
@@ -184,16 +186,13 @@ var _componentStatusSwitchery = function() {
         }), 'warning', 'Warning!!');
         return;
     }
-
     var elems = Array.prototype.slice.call(document.querySelectorAll('.form-check-status-switchery'));
-
     if (elems.length > 0) {
         elems.forEach(function(html) {
             var switchery = new Switchery(html);
         });
     }
 };
-
 var swalInit = swal.mixin({
     buttonsStyling: false,
     confirmButtonClass: 'btn btn-primary',
@@ -202,8 +201,6 @@ var swalInit = swal.mixin({
     confirmButtonText: Lang.get('service.confirm'),
     cancelButtonText: Lang.get('service.cancel')
 });
-
-
 if ($('.content_management_datatable').length > 0 && $().DataTable) {
     let url = $('.content_management_datatable').data('url');
     // Setting datatable defaults
@@ -215,7 +212,6 @@ if ($('.content_management_datatable').length > 0 && $().DataTable) {
         order: [1, 'desc'],
         processing: true,
         serverSide: true,
-
         dom: '<"dt-buttons-full"B><"datatable-header"fl><"datatable"t><"datatable-footer"ip>',
         ajax: {
             url: url,
@@ -264,8 +260,6 @@ function dataTableCardReload(cardblock = true, switchery = false, tooltip = fals
     if (cardblock) {
         cardBlock($(block));
     }
-
-
     if (switchery) {
         $('.switchery').remove();
         _componentStatusSwitchery();
@@ -276,10 +270,7 @@ function dataTableCardReload(cardblock = true, switchery = false, tooltip = fals
     if (unblock) {
         cardUnblock($(block));
     }
-
 }
-
-
 if ($('#reload').length > 0) {
     $(document).on('click', '#reload', function() {
         dataTableReload();
@@ -291,7 +282,6 @@ function dataTableReload() {
         tariq.ajax.reload(null, false);
     }
 }
-
 /*
  * For Get Data Table Selected Rows Id
  */
@@ -303,7 +293,6 @@ function getDatatableSelectedRowIds(dt) {
     });
     return ids;
 }
-
 
 function datatableSelectedRowsAction(dt, url, action = 'delete', msg = Lang.get('service.delete_message')) {
     var ids = getDatatableSelectedRowIds(dt);
@@ -320,7 +309,6 @@ function datatableSelectedRowsAction(dt, url, action = 'delete', msg = Lang.get(
                 $.ajax({
                     url: url,
                     method: 'PUT',
-                    
                     data: {
                         action: action,
                         ids: ids
@@ -337,7 +325,6 @@ function datatableSelectedRowsAction(dt, url, action = 'delete', msg = Lang.get(
                 });
             }
         });
-
 }
 
 function p_notify(msg = Lang.get('service.error_msg'), type = 'error', title = Lang.get('service.error_title')) {
@@ -362,6 +349,10 @@ function noty(msg = Lang.get('service.error_msg'), type = 'error', title = Lang.
 }
 
 function ajax_error(data, form = null, submit = $('#submit')) {
+    var audio = $('#error-audio')[0];
+    if (audio !== undefined) {
+        audio.play();
+    }
     if (data.status === 404) {
         p_notify(Lang.get('service.not_found', {
             attribute: 'Requested page'
@@ -397,6 +388,10 @@ function ajax_error(data, form = null, submit = $('#submit')) {
 }
 
 function ajax_success(data, form = null, submit = $('#submit')) {
+    var audio = $('#success-audio')[0];
+    if (audio !== undefined) {
+        audio.play();
+    }
     p_notify(data.message, 'success', Lang.get('service.success_title'));
     if (check_element('content_modal')) {
         $('#content_modal').modal('hide');
@@ -497,3 +492,89 @@ $(document).on('click', '#logout', function(e) {
         }
     });
 });
+if ($('.modal-dialog-scrollable').length > 0) {
+    console.log('Tariq');
+    // _componentPerfectScrollbar('.modal-body');
+}
+$(document).on('click', '.check_all', function() {
+    if (this.checked) {
+        $(this)
+            .closest('.check_group')
+            .find('.form-check-input-styled')
+            .each(function() {
+                $(this).prop('checked', true);
+                $.uniform.update();
+            });
+    } else {
+        $(this)
+            .closest('.check_group')
+            .find('.form-check-input-styled')
+            .each(function() {
+                $(this).prop('checked', false);
+                $.uniform.update();
+            });
+    }
+});
+
+var _componentTooltipCustomColor = function() {
+    $('[data-popup=tooltip]').tooltip();
+};
+$(document).on("wheel", "input[type=number]", function(e) {
+    $(this).blur();
+});
+
+function checkEmail() {
+    $(document).on('change', '#email', function() {
+        $('.parsley-required').remove();
+        var email = $(this).val();
+        var field = $(this).parsley();
+        if (field.isValid()) {
+            $.ajax({
+                url: BASE_URL + '/business/register/check-email',
+                type: 'POST',
+                data: {
+                    email: email
+                },
+                dataType: 'JSON',
+                success: function(data) {
+                    field.validate();
+                    p_notify(data.message, 'success', Lang.get('service.success_title'));
+                },
+                error: function(data) {
+                    ajax_error(data);
+                }
+            });
+        } else {
+            field.validate();
+
+        }
+    });
+}
+
+function checkUsername() {
+    $(document).on('change', '#username', function() {
+        $('.parsley-required').remove();
+        var username = $(this).val();
+        var field = $(this).parsley();
+        if (field.isValid()) {
+            $.ajax({
+                url: BASE_URL + '/business/register/check-username',
+                type: 'POST',
+                data: {
+                    username: username
+                },
+                dataType: 'JSON',
+                success: function(data) {
+                    field.validate();
+                    p_notify(data.message, 'success', Lang.get('service.success_title'));
+                },
+                error: function(data) {
+                    ajax_error(data);
+                }
+            });
+        } else {
+            field.validate();
+
+        }
+    });
+}

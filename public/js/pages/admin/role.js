@@ -52,7 +52,7 @@ var DatatableResponsive = function() {
                 className: 'btn btn-danger',
                 text: 'Delete',
                 action: function(e, dt, node, config) {
-                    datatableSelectedRowsAction(dt, 'action/user', action = 'delete', msg = Lang.get('service.delete_message'));
+                    datatableSelectedRowsAction(dt, 'action/role', action = 'delete', msg = Lang.get('service.delete_message'));
                 }
             }],
             columns: [{
@@ -60,26 +60,38 @@ var DatatableResponsive = function() {
             }, {
                 data: 'DT_RowIndex',
                 name: 'id'
-            },  {
+            }, {
                 data: 'role'
             }, {
                 data: 'action'
             }]
+        });
+
+        tariq.on('select', function(e, dt, type, indexes) {
+            if (type === 'row') {
+                var rows = tariq.rows(indexes).nodes().to$();
+                $.each(rows, function() {
+                    if ($(this).hasClass('is_default')) tariq.row($(this)).deselect();
+                })
+            }
         });
     };
     var _componentRemoteModalLoad = function() {
             $(document).on('click', '#content_managment', function(e) {
                 e.preventDefault();
                 $('#modal-loader').show();
+                var modal = $('#content_modal');
                 //open modal
-                $('#modal_remote').modal('show');
-                $('#modal_remote').on('hide.bs.modal', function() {
+                modal.modal('show');
+                modal.on('hide.bs.modal', function() {
                     $('.modal-body').html('');
                 });
-
-                // $('#modal_remote').on('shown.bs.modal', function() {
-                //     alert('onShown callback fired.')
-                // });
+                modal.on('shown.bs.modal', function(e) {
+                    var ele = $(e.target).find('input[type=text],textarea,select').filter(':visible:first'); // find the first input on the bs modal
+                    if (ele) {
+                        ele.focus();
+                    } // if we found one then set focus.
+                });
                 var element = $(this).data('element');
                 // it will get action url
                 var url = $(this).data('url');

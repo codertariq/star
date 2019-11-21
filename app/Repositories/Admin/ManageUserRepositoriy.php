@@ -2,18 +2,35 @@
 
 namespace App\Repositories\Admin;
 
+use App\Repositories\Admin\RoleRepositoriy;
 use App\Repositories\Repository;
 use App\User;
+use App\Utils\Util;
 use Illuminate\Validation\ValidationException;
 use Yajra\Datatables\Datatables;
 
 class ManageUserRepositoriy extends Repository {
+	protected $role;
+	protected $moduleUtil;
 
-	public function __construct(User $model) {
+	public function __construct(
+		User $model,
+		RoleRepositoriy $role,
+		Util $moduleUtil
+	) {
 		$this->model = $model;
+		$this->role = $role;
+		$this->moduleUtil = $moduleUtil;
 		$this->permission = '';
 		$this->route = 'admin.user.';
 		$this->action_exeption = [];
+	}
+
+	public function getBussinessId() {
+		return request()->session()->get('user.business_id');
+	}
+	public function getUserId() {
+		return request()->session()->get('user.id');
 	}
 
 	/**
@@ -73,7 +90,18 @@ class ManageUserRepositoriy extends Repository {
 
 	public function preRequisite($id = Null) {
 
-		//return $compact;
+		$roles_array = $this->role->model->where('business_id', $this->getBussinessId())->get()->pluck('name', 'id');
+		$roles = [];
+		foreach ($roles_array as $key => $value) {
+			$roles[$key] = str_replace('#' . $this->getBussinessId(), '', $value);
+		}
+
+		$username_ext = $this->getUsernameExtension();
+		// $contacts = Contact::contactDropdown($this->getBussinessId(), true, false);
+		$contacts = [];
+
+		$compact = compact('roles', 'username_ext', 'contacts');
+		return $compact;
 	}
 
 	/**
@@ -94,11 +122,9 @@ class ManageUserRepositoriy extends Repository {
 	 * Get all data for Index
 	 */
 	public function datatable() {
-		$user_id = auth()->user()->id;
-		$business_id = auth()->user()->business->id;
 		$models = $this->model
-			->where('business_id', $business_id)
-		// ->where('id', '!=', $user_id)
+			->where('business_id', $this->getBussinessId())
+			->where('id', '!=', $this->getUserId())
 			->where('is_cmmsn_agnt', 0)
 			->select(['id', 'username', 'first_name', 'last_name', 'prefix', 'email']);
 		return Datatables::of($models)
@@ -131,7 +157,20 @@ class ManageUserRepositoriy extends Repository {
 	 * @return User
 	 */
 	public function create($params) {
-		return $this->model->forceCreate($this->formatParams($params));
+		$model = $this->model->forceCreate($this->formatParams($params));
+		$this->assignUser($model, $params);
+	}
+
+	public function assignUser($user, $params) {
+		$role_id = gv($params, 'role');
+		$role = $this->role->findOrFail($role_id);
+		$user->assignRole($role->name);
+
+		//Assign selected contacts
+		if (gbv($params, 'selected_contacts')) {
+			$contact_ids = gv($params, 'selected_contact_ids');
+			$this->model->contactAccess()->sync($contact_ids);
+		}
 	}
 
 	/**
@@ -142,10 +181,52 @@ class ManageUserRepositoriy extends Repository {
 	 * @return array
 	 */
 	private function formatParams($params, $model_id = null) {
+
 		$formatted = [
-			'name' => gv($params, 'name'),
+			'prefix' => gv($params, 'prefix'),
+			'first_name' => gv($params, 'first_name'),
+			'last_name' => gv($params, 'last_name'),
+			'username' => gv($params, 'username'),
+			'email' => gv($params, 'email'),
+			'password' => gv($params, 'password'),
+			'selected_contacts' => gv($params, 'selected_contacts'),
+			'marital_status' => gv($params, 'marital_status'),
+			'blood_group' => gv($params, 'blood_group'),
+			'contact_number' => gv($params, 'contact_number'),
+			'fb_link' => gv($params, 'fb_link'),
+			'twitter_link' => gv($params, 'twitter_link'),
+			'social_media_1' => gv($params, 'social_media_1'),
+			'social_media_2' => gv($params, 'social_media_2'),
+			'permanent_address' => gv($params, 'permanent_address'),
+			'current_address' => gv($params, 'current_address'),
+			'guardian_name' => gv($params, 'guardian_name'),
+			'custom_field_1' => gv($params, 'custom_field_1'),
+			'custom_field_2' => gv($params, 'custom_field_2'),
+			'custom_field_3' => gv($params, 'custom_field_3'),
+			'custom_field_4' => gv($params, 'custom_field_4'),
+			'id_proof_name' => gv($params, 'id_proof_name'),
+			'id_proof_number' => gv($params, 'id_proof_number'),
+			'status' => gv($params, 'status') ? 'active' : 'inactive',
+			'selected_contacts' => gbv($params, 'selected_contacts'),
+			'dob' => gv($params, 'dob') ? $this->moduleUtil->uf_date(gv($params, 'dob')) : Null,
+			'bank_details' => gv($params, 'bank_details') ? json_encode(gv($params, 'bank_details')) : Null,
+			'password' => bcrypt(gv($params, 'password')),
+			'cmmsn_percent' => gv($params, 'cmmsn_percent', 0),
+			'business_id' => $this->getBussinessId(),
 		];
+
+		$ref_count = $this->moduleUtil->setAndGetReferenceCount('username');
+		if (!gv($params, 'username')) {
+			$formatted['username'] = $this->moduleUtil->generateReferenceNumber('username', $ref_count);
+		}
+
+		$username_ext = $this->getUsernameExtension();
+		if (!empty($username_ext)) {
+			$formatted['username'] .= $username_ext;
+		}
+
 		return $formatted;
+
 	}
 
 	/**
@@ -266,5 +347,10 @@ class ManageUserRepositoriy extends Repository {
 		} else if ($data['action'] == 'toggle') {
 			$this->toggleMultiple($data['ids']);
 		}
+	}
+
+	private function getUsernameExtension() {
+		$extension = !true ? '-' . str_pad(session()->get('business.id'), 2, 0, STR_PAD_LEFT) : null;
+		return $extension;
 	}
 }

@@ -62,11 +62,11 @@ var DatatableResponsive = function() {
                 name: 'id'
             }, {
                 data: 'username'
-            },{
+            }, {
                 data: 'full_name'
             }, {
                 data: 'role'
-            },{
+            }, {
                 data: 'email'
             }, {
                 data: 'action'
@@ -77,15 +77,19 @@ var DatatableResponsive = function() {
             $(document).on('click', '#content_managment', function(e) {
                 e.preventDefault();
                 $('#modal-loader').show();
+                var modal = $('#content_modal');
                 //open modal
-                $('#modal_remote').modal('show');
-                $('#modal_remote').on('hide.bs.modal', function() {
+                modal.modal('show');
+                modal.on('hide.bs.modal', function() {
                     $('.modal-body').html('');
                 });
+                modal.on('shown.bs.modal', function(e) {
+                    var ele = $(e.target).find('input[type=text],textarea,select').filter(':visible:first'); // find the first input on the bs modal
+                    if (ele) {
+                        ele.focus();
+                    } // if we found one then set focus.
+                });
 
-                // $('#modal_remote').on('shown.bs.modal', function() {
-                //     alert('onShown callback fired.')
-                // });
                 var element = $(this).data('element');
                 // it will get action url
                 var url = $(this).data('url');
@@ -104,7 +108,6 @@ var DatatableResponsive = function() {
                         }
                     })
                     .fail(function(data) {
-                        // $('#modal-loader').hide();
                         $('#modal-loader').hide();
                         $('.modal-body').html('<span class="text-danger font-weight-bold" > ' + Lang.get('service.something_wrong') + '</span>').fadeIn();
                         ajax_error(data);
@@ -121,6 +124,8 @@ var DatatableResponsive = function() {
                 _componentDataTableSelect2();
             }
             _componentRemoteModalLoad();
+            checkEmail();
+            checkUsername();
         }
     }
 }();

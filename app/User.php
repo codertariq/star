@@ -58,4 +58,9 @@ class User extends Authenticatable {
 	public function getRoleNameAttribute() {
 		return explode('#', $this->getRoleNames()[0])[0];
 	}
+
+	public function contactAccess() {
+		return $this->belongsToMany(\App\Models\Contact::class, 'user_contact_access');
+	}
+
 }

@@ -37,7 +37,15 @@ class RoleController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function create() {
-		return view('admin.role.create');
+		if (!$this->request->ajax()) {
+			abort(404);
+		}
+		if (!auth()->user()->can('roles.create')) {
+			abort(403, 'Unauthorized action.');
+		}
+		$pre_requsite = $this->repo->preRequisite();
+
+		return view('admin.role.create', $pre_requsite);
 	}
 
 	/**
@@ -47,7 +55,15 @@ class RoleController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function store(Request $request) {
-		//
+		if (!$this->request->ajax()) {
+			abort(404);
+		}
+		if (!auth()->user()->can('roles.create')) {
+			abort(403, 'Unauthorized action.');
+		}
+		$this->repo->create($this->request->all());
+
+		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.role')])]);
 	}
 
 	/**
@@ -67,7 +83,14 @@ class RoleController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function edit($id) {
-		//
+		if (!$this->request->ajax()) {
+			abort(404);
+		}
+		if (!auth()->user()->can('roles.update')) {
+			abort(403, 'Unauthorized action.');
+		}
+		$pre_requsite = $this->repo->preRequisite($id);
+		return view('admin.role.edit', $pre_requsite);
 	}
 
 	/**
@@ -78,7 +101,18 @@ class RoleController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function update(Request $request, $id) {
-		//
+		if (!$this->request->ajax()) {
+			abort(404);
+		}
+		if (!auth()->user()->can('roles.update')) {
+			abort(403, 'Unauthorized action.');
+		}
+		$this->repo->updateable($id);
+		$model = $this->repo->findOrFail($id);
+		$this->repo->update($model, $this->request->all());
+
+		return response()->json(['message' => __('service.updated_successfull', ['attribute' => __('page.role')])]);
+
 	}
 
 	/**
@@ -88,23 +122,20 @@ class RoleController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($id) {
+		if (!auth()->user()->can('roles.delete')) {
+			abort(403, 'Unauthorized action.');
+		}
 		if (!$this->request->ajax()) {
 			abort(404);
 		}
 
-		$model = $this->repo->findOrFail($id);
+		$model = $this->repo->deletable($id);
 
-		if ($this->request->action and $this->request->action == 'status') {
-			$this->repo->updateable($id);
-			$this->repo->updateStatus($model);
-			return response()->json(['message' => __('service.status_updated', ['attribute' => __('page.role')])]);
-		}
-		$this->repo->deletable($id);
 		$this->repo->delete($model);
+
 		return response()->json(['message' => __('service.deleted', ['attribute' => __('page.role')])]);
 
 	}
-
 	/**
 	 * Action the specified resources from storage.
 	 *

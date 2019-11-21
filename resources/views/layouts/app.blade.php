@@ -20,6 +20,7 @@
 		<link href="{{ asset('assets/css/colors.min.css') }}" rel="stylesheet" type="text/css">
 		<link href="{{ asset('css/pace.css') }}" rel="stylesheet" type="text/css">
 		<link href="{{ asset('css/parsley.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/date_time_picker.css') }}" rel="stylesheet" type="text/css">
 		@stack('css')
 
 		<script>
@@ -184,7 +185,7 @@
 		<!-- Page content -->
 		@if (gv($data['attribute'], 'modal') and in_array($data['attribute']['modal'], ATTR['modal']))
 		<!-- Modal content -->
-		<div id="modal_remote" class="modal fade border-success" tabindex="-1"  data-backdrop="static">
+		<div id="content_modal" class="modal fade border-success" tabindex="-1"  data-backdrop="static">
 			<div class="modal-dialog modal-{{ $data['attribute']['modal'] }} modal-dialog-scrollable">
 				<div class="modal-content">
 					<div class="modal-header bg-light border-success-300 text-success-800 border-bottom-success alpha-success">
@@ -197,13 +198,26 @@
 						<button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
 					</div>
 					<div id="modal-loader" style="display: none; text-align: center;"> <img src="{{ asset('ajaxloader.gif') }}" width="400px"> </div>
-					<div class="modal-body justify-content-center d-flex ">
+					<div class="modal-body">
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- Modal content -->
 		@endif
+
+		 <audio id="success-audio">
+              <source src="{{ asset('/audio/success.ogg') }}" type="audio/ogg">
+              <source src="{{ asset('/audio/success.mp3') }}" type="audio/mpeg">
+            </audio>
+            <audio id="error-audio">
+              <source src="{{ asset('/audio/error.ogg') }}" type="audio/ogg">
+              <source src="{{ asset('/audio/error.mp3') }}" type="audio/mpeg">
+            </audio>
+            <audio id="warning-audio">
+              <source src="{{ asset('/audio/warning.ogg') }}" type="audio/ogg">
+              <source src="{{ asset('/audio/warning.mp3') }}" type="audio/mpeg">
+            </audio>
 		<!-- Core JS files -->
 		<script src="{{ asset('messages.js') }}"></script>
 		<script src="{{ asset('global_assets/js/main/jquery.min.js') }}"></script>
@@ -218,8 +232,10 @@
 		<script src="{{ asset('global_assets/js/plugins/forms/styling/uniform.min.js') }}"></script>
 		<script src="{{ asset('global_assets/js/plugins/forms/styling/switch.min.js') }}"></script>
 		<script src="{{ asset('global_assets/js/plugins/forms/styling/switchery.min.js') }}"></script>
+		<script src="{{ asset('global_assets/js/plugins/ui/moment/moment.min.js') }}"></script>
 		<script src="{{ asset('js/layout_fixed_sidebar_custom.js') }}"></script>
 		<script src="{{ asset('js/parsley.js') }}"></script>
+		<script src="{{ asset('js/date_time_picker.js') }}"></script>
 		@if (ANIMATE)
 		<script src="{{ asset('global_assets/js/plugins/velocity/velocity.min.js') }}"></script>
 		<script src="{{ asset('global_assets/js/plugins/velocity/velocity.ui.min.js') }}"></script>

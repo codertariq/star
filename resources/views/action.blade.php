@@ -6,16 +6,16 @@
 		</a>
 		<div class="dropdown-menu dropdown-menu-right">
 			@if(!in_array('show', $action['action_exeption']))
-			{{-- @can('view'.$permission) --}}
+			@can($action['permission'].'view')
 			<span class="dropdown-item" id="content_managment" data-url="{{ route($action['route'].'show', $model->id )}}"><i class="icon-eye"></i>{{ __('service.view') }}</span>
-			{{-- @endcan --}}
+			@endcan
 			@endif
-			{{-- @can('update'.$permission) --}}
-			<span class="dropdown-item" id="content_managment" data-url="{{ route($action['route'].'edit', $model->id )}}"><i class="icon-pencil7"></i> {{ __('service.edit') }}</span>
-			{{-- @endcan --}}
-			{{-- @can('delete'.$permission) --}}
+			@can($action['permission'].'update')
+			<span class="dropdown-item" data-element="form" id="content_managment" data-url="{{ route($action['route'].'edit', $model->id )}}"><i class="icon-pencil7"></i> {{ __('service.edit') }}</span>
+			@endcan
+			@can($action['permission'].'.delete')
 			<span class="dropdown-item" id="delete_item" data-id="{{ $model->id }}" data-url="{{ route($action['route'].'destroy', $model->id )}}"><i class="icon-trash"></i> {{ __('service.delete') }} </button></span>
-			{{-- @endcan --}}
+			@endcan
 		</div>
 	</div>
 </div>
