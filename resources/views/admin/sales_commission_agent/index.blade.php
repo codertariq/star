@@ -1,14 +1,14 @@
 @php
 //arrtibutes : form= true, false; modal= false, full, normal, lg, xs, sm; ;list = true, false
-$data['attribute'] = ['form' => true, 'list' => true, 'modal' => 'full'];
-$data['breadcrumbs'] = 'user.index';
+$data['attribute'] = ['form' => true, 'list' => true, 'modal' => 'lg'];
+$data['breadcrumbs'] = 'sales-commission-agents.index';
 $data['create'] = 'modal';
-$data['icon'] = 'icon-users4';
-$data['page'] = __('page.user');
-$data['page_title'] = __('page.user_title');
+$data['icon'] = 'icon-sun3';
+$data['page'] = __('page.sales_commission_agents');
+$data['page_title'] = __('page.sales_commission_agents_title');
 $data['permission'] = 'user.';
-$data['route'] = 'admin.user.';
-$data['page_index'] = 'admin.user.index';
+$data['route'] = 'admin.sales-commission-agents.';
+$data['page_index'] = 'admin.sales-commission-agents.index';
 @endphp
 {{-- Main Layout for This Page --}}
 @extends('layouts.app', ['data' => $data])
@@ -55,10 +55,11 @@ $data['page_index'] = 'admin.user.index';
 					<tr>
 						<th></th>
 						<th>#</th>
-						<th>{{ __('page.username') }}</th>
-						<th>{{ __('page.name') }}</th>
-						<th>{{ __('page.role') }}</th>
-						<th>{{ __('page.email') }}</th>
+						<th>{{ __('user.name') }}</th>
+						<th>{{ __('business.email') }}</th>
+						<th>{{ __('service.contact_no') }}</th>
+						<th>{{ __( 'business.address' ) }}</th>
+						<th>@lang( 'service.cmmsn_percent' )</th>
 						<th class="text-center">{{ __('page.actions') }}</th>
 					</tr>
 				</thead>
@@ -70,5 +71,5 @@ $data['page_index'] = 'admin.user.index';
 </div>
 @stop
 @push('js')
-<script src="{{ asset('js/pages/admin/user.js') }}"></script>
+<script src="{{ asset('js/pages/admin/sales_commission_agent.js') }}"></script>
 @endpush

@@ -366,11 +366,11 @@ function ajax_error(data, form = null, submit = $('#submit')) {
         return;
     }
     let jsonValue = $.parseJSON(data.responseText);
-    const errors = jsonValue.errors;
+    let errors = jsonValue.errors;
     if (errors) {
         var i = 0;
         $.each(errors, function(key, value) {
-            const first_item = Object.keys(errors)[i];
+            let first_item = Object.keys(errors)[i];
             let error_el_id = $('#' + first_item);
             if (error_el_id.length > 0) {
                 error_el_id.parsley().addError('required', {
@@ -410,20 +410,20 @@ function ajax_success(data, form = null, submit = $('#submit')) {
     dataTableReload();
     if (form) {
         form[0].reset();
-        hide_submit_loading(submit);
     }
+    hide_submit_loading(submit);
 };
 
 function show_submit_loading(form = $('#content_form')) {
     let button = form.closest('#submit');
     button.attr('disabled', true);
     button.append('<i class="icon-spinner10 ml-2 text-danger spinner"></i>');
-    const card = button.closest('.card');
+    let card = button.closest('.card');
     if (card.length > 0) {
         cardBlock(card);
         return;
     }
-    const modal = button.closest('.modal-content');
+    let modal = button.closest('.modal-content');
     if (modal.length > 0) {
         cardBlock(modal);
         return;
@@ -433,13 +433,12 @@ function show_submit_loading(form = $('#content_form')) {
 function hide_submit_loading(form = $('#content_form')) {
     let button = form.find('#submit');
     button.attr('disabled', false);
-    button.find('i').remove();
-    const card = button.closest('.card');
+    let card = button.closest('.card');
     if (card.length > 0) {
         cardUnblock(card);
         return;
     }
-    const modal = button.closest('.modal-content');
+    let modal = button.closest('.modal-content');
     if (modal.length > 0) {
         cardUnblock(modal);
         return;
@@ -493,7 +492,6 @@ $(document).on('click', '#logout', function(e) {
     });
 });
 if ($('.modal-dialog-scrollable').length > 0) {
-    console.log('Tariq');
     // _componentPerfectScrollbar('.modal-body');
 }
 $(document).on('click', '.check_all', function() {
@@ -527,13 +525,16 @@ function checkEmail() {
     $(document).on('change', '#email', function() {
         $('.parsley-required').remove();
         var email = $(this).val();
+        var user_id = $('#user_id').val();
+        console.log(user_id);
         var field = $(this).parsley();
         if (field.isValid()) {
             $.ajax({
                 url: BASE_URL + '/business/register/check-email',
                 type: 'POST',
                 data: {
-                    email: email
+                    email: email,
+                    user_id: user_id
                 },
                 dataType: 'JSON',
                 success: function(data) {
@@ -546,7 +547,6 @@ function checkEmail() {
             });
         } else {
             field.validate();
-
         }
     });
 }
@@ -555,13 +555,15 @@ function checkUsername() {
     $(document).on('change', '#username', function() {
         $('.parsley-required').remove();
         var username = $(this).val();
+        var user_id = $('#user_id').val();
         var field = $(this).parsley();
         if (field.isValid()) {
             $.ajax({
                 url: BASE_URL + '/business/register/check-username',
                 type: 'POST',
                 data: {
-                    username: username
+                    username: username,
+                    user_id: user_id
                 },
                 dataType: 'JSON',
                 success: function(data) {
@@ -574,7 +576,18 @@ function checkUsername() {
             });
         } else {
             field.validate();
-
         }
     });
 }
+
+$('#content_modal').on('hide.bs.modal', function() {
+    hide_submit_loading();
+    $('.modal-body').html('');
+});
+$('#content_modal').on('shown.bs.modal', function(e) {
+    var ele = $(e.target).find('input[type=text],textarea,select').filter(':visible:first'); // find the first input on the bs modal
+    console.log(ele);
+    if (ele.length > 0) {
+        ele.focus();
+    }
+});

@@ -35,7 +35,7 @@ class UsersTableSeeder extends Seeder {
 		$user->save();
 
 		$role = Role::create([
-			'name' => 'Admin',
+			'name' => 'Admin#' . $business->id,
 			'guard_name' => 'web',
 			'business_id' => $business->id,
 			'is_default' => 1,

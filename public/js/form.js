@@ -71,7 +71,6 @@ var FormHandle = function() {
             }
             _componentValidation(form);
             _componentSubmit(form);
-            hide_submit_loading();
         }
     }
 }();

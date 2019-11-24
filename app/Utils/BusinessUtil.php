@@ -3,6 +3,11 @@
 namespace App\Utils;
 
 use App\Models\Business;
+use App\Models\Contact;
+use App\Models\Currency;
+use App\Models\InvoiceLayout;
+use App\Models\InvoiceScheme;
+use Illuminate\Support\Facades\DB;
 
 class BusinessUtil extends Util {
 

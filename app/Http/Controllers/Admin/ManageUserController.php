@@ -35,6 +35,9 @@ class ManageUserController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function create() {
+		if (!auth()->user()->can('user.create')) {
+			abort(403, 'Unauthorized action.');
+		}
 		$pre_requisite = $this->repo->preRequisite();
 		return view('admin.manage_user.create', $pre_requisite);
 	}
@@ -61,7 +64,13 @@ class ManageUserController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function show($id) {
-		//
+		if (!auth()->user()->can('user.view')) {
+			abort(403, 'Unauthorized action.');
+		}
+
+		// $model = $this->repo->getQuery()->with(['contactAccess'])->findOrFail($id);
+		$model = $this->repo->findOrFail($id);
+		return view('admin.manage_user.show', compact('model'));
 	}
 
 	/**
@@ -71,7 +80,13 @@ class ManageUserController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function edit($id) {
-		//
+		if (!auth()->user()->can('user.update')) {
+			abort(403, 'Unauthorized action.');
+		}
+
+		$model = $this->repo->findOrFail($id);
+		$pre_requisite = $this->repo->preRequisite($id);
+		return view('admin.manage_user.edit', compact('model'), $pre_requisite);
 	}
 
 	/**
@@ -81,8 +96,14 @@ class ManageUserController extends Controller {
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update(Request $request, $id) {
-		//
+	public function update(ManageUserRequest $request, $id) {
+
+		if (!auth()->user()->can('user.update')) {
+			abort(403, 'Unauthorized action.');
+		}
+		$model = $this->repo->findOrFail($id);
+		$this->repo->update($model, $this->request->all());
+		return response()->json(['message' => __('service.updated_successfull', ['attribute' => __('page.user')])]);
 	}
 
 	/**

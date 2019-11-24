@@ -20,13 +20,20 @@ class ManageUserRequest extends FormRequest {
 	 * @return array
 	 */
 	public function rules() {
-		return [
+
+		$rules = [
 			'prefix' => 'required|string|max:191',
 			'first_name' => 'required|string|max:191',
-			'email' => 'required|email|unique:users,email,' . $this->id,
-			'username' => 'required|string|unique:users,username,' . $this->id,
-			'password' => 'required|string|min:6|',
-			'confirm_password' => 'required|string|min:6|same:password',
+			'email' => 'required|email|unique:users,email,' . $this->user,
+			'username' => 'required|string|unique:users,username,' . $this->user,
+			'cmmsn_percent' => 'sometimes|nullable|numeric|max:99.99',
 		];
+
+		if (!$this->user) {
+			$rule['password'] = 'required|string|min:6';
+			$rule['confirm_password'] = 'required|string|min:6|same:password';
+		}
+
+		return $rules;
 	}
 }

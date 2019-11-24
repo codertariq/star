@@ -52,7 +52,7 @@ var DatatableResponsive = function() {
                 className: 'btn btn-danger',
                 text: 'Delete',
                 action: function(e, dt, node, config) {
-                    datatableSelectedRowsAction(dt, 'action/user', action = 'delete', msg = Lang.get('service.delete_message'));
+                    datatableSelectedRowsAction(dt, 'action/sales-commission-agents', action = 'delete', msg = Lang.get('service.delete_message'));
                 }
             }],
             columns: [{
@@ -61,13 +61,15 @@ var DatatableResponsive = function() {
                 data: 'DT_RowIndex',
                 name: 'id'
             }, {
-                data: 'username'
-            }, {
                 data: 'full_name'
-            }, {
-                data: 'role'
-            }, {
+            },{
                 data: 'email'
+            },{
+                data: 'contact_no'
+            },{
+                data: 'address'
+            }, {
+                data: 'cmmsn_percent'
             }, {
                 data: 'action'
             }]
@@ -115,8 +117,6 @@ var DatatableResponsive = function() {
                 _componentDataTableSelect2();
             }
             _componentRemoteModalLoad();
-            checkEmail();
-            checkUsername();
         }
     }
 }();

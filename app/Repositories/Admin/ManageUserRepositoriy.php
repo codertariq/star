@@ -99,8 +99,20 @@ class ManageUserRepositoriy extends Repository {
 		$username_ext = $this->getUsernameExtension();
 		// $contacts = Contact::contactDropdown($this->getBussinessId(), true, false);
 		$contacts = [];
-
 		$compact = compact('roles', 'username_ext', 'contacts');
+
+		if ($id) {
+			$model = $this->findOrFail($id);
+			if ($model->status == 'active') {
+				$is_checked_checkbox = true;
+			} else {
+				$is_checked_checkbox = false;
+			}
+			// $contact_access = $model->contactAccess->pluck('id')->toArray();
+			$contact_access = [];
+			$compact = compact('is_checked_checkbox', 'roles', 'username_ext', 'contacts', 'contact_access');
+		}
+
 		return $compact;
 	}
 
@@ -111,7 +123,7 @@ class ManageUserRepositoriy extends Repository {
 	 * @return User
 	 */
 	public function findOrFail($id, $field = 'message') {
-		$model = $this->model->find($id);
+		$model = $this->model->where('business_id', $this->getBussinessId())->find($id);
 		if (!$model) {
 			throw ValidationException::withMessages([$field => __('service.not_found', ['attribute' => __('page.user')])]);
 		}
@@ -126,7 +138,7 @@ class ManageUserRepositoriy extends Repository {
 			->where('business_id', $this->getBussinessId())
 			->where('id', '!=', $this->getUserId())
 			->where('is_cmmsn_agnt', 0)
-			->select(['id', 'username', 'first_name', 'last_name', 'prefix', 'email']);
+			->select(['id', 'username', 'first_name', 'last_name', 'prefix', 'email', 'status']);
 		return Datatables::of($models)
 			->addIndexColumn()
 			->addColumn(
@@ -145,6 +157,13 @@ class ManageUserRepositoriy extends Repository {
 				$action['action_exeption'] = $this->action_exeption;
 				return view('action', compact('model', 'action'));
 			})
+			->setRowClass(function ($model) {
+				$class = '';
+				if ($model->status == 'inactive') {
+					$class = 'table-danger';
+				}
+				return $class;
+			})
 			->removeColumn(['created_at', 'updated_at'])
 			->rawColumns(['action', 'full_name', 'status'])
 			->make(true);
@@ -159,12 +178,22 @@ class ManageUserRepositoriy extends Repository {
 	public function create($params) {
 		$model = $this->model->forceCreate($this->formatParams($params));
 		$this->assignUser($model, $params);
+		return;
 	}
 
 	public function assignUser($user, $params) {
+
+		$user_role = $user->roles->first();
 		$role_id = gv($params, 'role');
+
 		$role = $this->role->findOrFail($role_id);
-		$user->assignRole($role->name);
+
+		if ($user_role and $user_role->id != $role_id) {
+			$user->removeRole($user_role->name);
+			$user->assignRole($role->name);
+		} else {
+			$user->assignRole($role->name);
+		}
 
 		//Assign selected contacts
 		if (gbv($params, 'selected_contacts')) {
@@ -206,7 +235,7 @@ class ManageUserRepositoriy extends Repository {
 			'custom_field_4' => gv($params, 'custom_field_4'),
 			'id_proof_name' => gv($params, 'id_proof_name'),
 			'id_proof_number' => gv($params, 'id_proof_number'),
-			'status' => gv($params, 'status') ? 'active' : 'inactive',
+			'status' => gv($params, 'is_active') ? 'active' : 'inactive',
 			'selected_contacts' => gbv($params, 'selected_contacts'),
 			'dob' => gv($params, 'dob') ? $this->moduleUtil->uf_date(gv($params, 'dob')) : Null,
 			'bank_details' => gv($params, 'bank_details') ? json_encode(gv($params, 'bank_details')) : Null,
@@ -214,6 +243,11 @@ class ManageUserRepositoriy extends Repository {
 			'cmmsn_percent' => gv($params, 'cmmsn_percent', 0),
 			'business_id' => $this->getBussinessId(),
 		];
+
+		if ($model_id) {
+			$model = $this->findOrFail($model_id);
+			$formatted['password'] = gv($params, 'password', $model->password);
+		}
 
 		$ref_count = $this->moduleUtil->setAndGetReferenceCount('username');
 		if (!gv($params, 'username')) {
@@ -238,7 +272,9 @@ class ManageUserRepositoriy extends Repository {
 	 * @return User
 	 */
 	public function update(User $model, $params) {
-		return $model->forceFill($this->formatParams($params, $model->id))->save();
+		$model->forceFill($this->formatParams($params, $model->id))->save();
+		$this->assignUser($model, $params);
+		return;
 	}
 
 	/**

@@ -43,7 +43,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('role', __( 'user.role' ) , ['class' => 'required']) !!}
-                {!! Form::select('role', $roles, null, [
+                {!! Form::select('role', $roles, $model->roles->first()->id, [
                 'class' => 'form-control select',
                 'data-parsley-required-message' => __('validation.required', ['attribute' => __('user.role')]),
                 'data-parsley-errors-container'=>"#error_role_container"
@@ -80,26 +80,23 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
-                {!! Form::label('password', __( 'business.password' ) , ['class' => 'required']) !!}
+                {!! Form::label('password', __( 'business.password' )) !!}
                 {!! Form::password('password', [
                 'class' => 'form-control',
-                'required',
                 'placeholder' => __( 'business.password' ),
                 'autocomplete' => 'new-password',
-                'data-parsley-required-message' => __('validation.required', ['attribute' => __('business.password')]),
                 'data-parsley-minlength-message' => __('validation.min.string', ['attribute' => __('business.confirm_password'), 'min' => 6]),
                 'minlength' => 6,
                 ]); !!}
+                 <p class="help-block">@lang('user.leave_password_blank')</p>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                {!! Form::label('confirm_password', __( 'business.confirm_password' ) , ['class' => 'required']) !!}
+                {!! Form::label('confirm_password', __( 'business.confirm_password' )) !!}
                 {!! Form::password('confirm_password', [
                 'class' => 'form-control',
-                'required',
                 'placeholder' => __( 'business.confirm_password' ),
-                'data-parsley-required-message' => __('validation.required', ['attribute' => __('business.confirm_password')]),
                 'data-parsley-minlength-message' => __('validation.min.string', ['attribute' => __('business.confirm_password'), 'min' => 6]),
                 'data-parsley-equalto-message' => __('validation.confirmed', ['attribute' => __('business.password')]),
                 'minlength' => 6,
@@ -124,13 +121,13 @@
         <div class="col-md-2 my-auto">
             <div class="form-check form-check-inline">
                 <label class="form-check-label">
-                    {!! Form::checkbox('selected_contacts', 1, false,
+                    {!! Form::checkbox('selected_contacts', 1,  $model->selected_contacts,
                     [ 'class' => 'form-check-input-styled', 'data-fouc', 'id' => 'selected_contacts']) !!}  {{ __( 'service.allow_selected_contacts' ) }}
                 </label>
                 @show_tooltip(__('service.allow_selected_contacts_tooltip'))
             </div>
         </div>
-        <div class="col-md-6 hide selected_contacts_div" style="display: none; ">
+        <div class="col-md-6 hide selected_contacts_div" @if(isset($model) and $model->selected_contacts) @else style="display: none; " @endif >
             <div class="form-group">
                 {!! Form::label('selected_contact_ids', __('service.selected_contacts')) !!}
                 <div class="form-group">
@@ -143,19 +140,19 @@
         <div class="col-md-4">
             <div class="form-check form-check-inline">
                 <label class="form-check-label">
-                    {!! Form::checkbox('is_active', 'active', true,
+                    {!! Form::checkbox('is_active', 'active', $is_checked_checkbox,
                     [ 'class' => 'form-check-input-styled']) !!}  {{ __('service.status_for_user') }}
                 </label>
+
                 @show_tooltip(__('service.tooltip_enable_user_active'))
             </div>
         </div>
     </div>
     <legend class="text-uppercase font-size-sm font-weight-bold"> {{ __('service.more_info') }}</legend>
-    @include('admin.user.form')
+    @include('admin.user.form', ['bank_details' => !empty($model->bank_details) ? json_decode($model->bank_details, true) : null])
     <div class="form-group row text-center">
         <div class="col-md-12">
             {{ Form::submit(__('service.submit', ['attribute' => gv($data, 'page')]), ['class' => 'btn btn-primary ml-3l', 'id' => 'submit']) }}
-
             <button type="button" class="btn btn-danger" data-dismiss="modal"> {{  __('service.close', ['attribute' => gv($data, 'page')]) }} </button>
         </div>
     </div>
