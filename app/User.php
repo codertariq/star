@@ -61,4 +61,26 @@ class User extends Authenticatable {
 		return $this->belongsToMany(\App\Models\Contact::class, 'user_contact_accesses');
 	}
 
+	/**
+	 * Gives locations permitted for the logged in user
+	 *
+	 * @return string or array
+	 */
+	public static function permitted_locations() {
+		if (auth()->user()->can('access_all_locations')) {
+			return 'all';
+		} else {
+			$business_id = request()->session()->get('user.business_id');
+			$permitted_locations = [];
+			$all_locations = BusinessLocation::where('business_id', $business_id)->get();
+			foreach ($all_locations as $location) {
+				if (auth()->user()->can('location.' . $location->id)) {
+					$permitted_locations[] = $location->id;
+				}
+			}
+
+			return $permitted_locations;
+		}
+	}
+
 }

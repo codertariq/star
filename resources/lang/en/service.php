@@ -48,6 +48,7 @@ return [
 	'not_allowed' => ':attribute Not Allowed',
 	'method' => 'Method',
 
+	'profit_on_fixed' => 'Profit On Fixed',
 	'status_updated' => ':attribute status updated successful',
 	'deleted' => ':attribute deleted successful',
 	'created_successfull' => ':attribute created successful',
@@ -150,8 +151,7 @@ return [
 	'description' => 'Description',
 	'sell_line_description_help' => 'Add product IMEI, Serial number or other informations here.',
 	'unit_cost_before_discount' => 'Unit Cost (Before Discount)',
-	'discount_percent' => 'Discount Percent %',
-	'profit_margin' => 'Profit Margin %',
+	'profit_margin' => 'Profit Margin :attribute',
 	'discount_percent' => 'Discount Percent',
 	'application_tour' => 'Application Tour',
 	'profile' => 'Profile',
@@ -577,6 +577,8 @@ return [
 	'total_sell_return' => 'Total Sell Return',
 	'total_sell_return_paid' => 'Total Sell Return Paid',
 	'total_sell_return_inc_tax' => 'Total Sell Return Including Tax',
+
+	'profit_on_fixed_tooltip' => 'Default Profit Margin will be Percent. Check for change to Fixed',
 	'tooltip_columnize_taxes_heading' => 'Enter tax name for headings, heading should be present in tax name. For example headings can be: CGST, SGST, IGST & CESS. For tax names CGST@8% or CGST@10%; SGST@10% or SGST@8% etc',
 	'sales_payment_dues' => 'Sales Payment Due',
 	'purchase_payment_dues' => 'Purchase Payment Due',

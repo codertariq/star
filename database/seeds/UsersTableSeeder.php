@@ -29,6 +29,8 @@ class UsersTableSeeder extends Seeder {
 			'name' => 'Satt Pos',
 			'currency_id' => 134,
 			'owner_id' => $user->id,
+			'keyboard_shortcuts' => '{"pos":{"express_checkout":"shift+e","pay_n_ckeckout":"shift+p","draft":"shift+d","cancel":"shift+c","recent_product_quantity":"f2","edit_discount":"shift+i","edit_order_tax":"shift+t","add_payment_row":"shift+r","finalize_payment":"shift+f","add_new_product":"f4"}}',
+			'ref_no_prefixes' => '{"purchase":"PO","purchase_return":null,"stock_transfer":"ST","stock_adjustment":"SA","sell_return":"CN","expense":"EP","contacts":"CO","purchase_payment":"PP","sell_payment":"SP","expense_payment":null,"business_location":"BL","username":null,"subscription":null}',
 		]);
 
 		$user->business_id = $business->id;
@@ -56,6 +58,7 @@ class UsersTableSeeder extends Seeder {
 		BusinessLocation::create([
 			'business_id' => $business->id,
 			'name' => 'Satt Pos',
+			'location_id' => 'BL0001',
 			'landmark' => 'Talaimari',
 			'invoice_scheme_id' => $scheme->id,
 			'invoice_layout_id' => $layout->id,

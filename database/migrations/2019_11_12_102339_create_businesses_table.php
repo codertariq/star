@@ -23,7 +23,9 @@ class CreateBusinessesTable extends Migration {
 			$table->string('tax_label_1', 10)->nullable();
 			$table->string('tax_number_2', 100)->nullable();
 			$table->string('tax_label_2', 10)->nullable();
+
 			$table->float('default_profit_percent', 5, 2)->default(0);
+			$table->boolean('profit_on_fixed')->default(false);
 
 			$table->unsignedBigInteger('owner_id');
 			$table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
@@ -51,9 +53,12 @@ class CreateBusinessesTable extends Migration {
 			$table->boolean('enable_brand')->default(true);
 			$table->boolean('enable_category')->default(true);
 			$table->boolean('enable_model')->default(true);
+			$table->boolean('enable_lot_number')->default(false);
 			$table->boolean('enable_price_tax')->default(true);
 			$table->boolean('enable_purchase_status')->nullable()->default(true);
 			$table->integer('default_unit')->nullable();
+			$table->boolean('enable_row')->default(false);
+			$table->boolean('enable_position')->default(false);
 			$table->boolean('enable_racks')->default(false);
 			$table->text('enabled_modules')->nullable();
 			$table->string('date_format')->default('m/d/Y');

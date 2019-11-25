@@ -59,6 +59,10 @@ var _componentSelect2 = function() {
         dropdownAutoWidth: true,
         dropdownParent: $("#content_modal .modal-content")
     });
+
+     $('.card-body .select').select2({
+        // dropdownAutoWidth: true,
+    });
 };
 /*
  * Tooltip Custom Color
@@ -579,7 +583,34 @@ function checkUsername() {
         }
     });
 }
-
+function checkLocationId() {
+    $(document).on('change', '#location_id', function() {
+        $('.parsley-required').remove();
+        var location_id = $(this).val();
+        var hidden_id = $('#hidden_id').val();
+        var field = $(this).parsley();
+        if (field.isValid()) {
+            $.ajax({
+                url: BASE_ADMIN_URL + 'business-location/check-location-id',
+                type: 'POST',
+                data: {
+                    location_id: location_id,
+                    hidden_id: hidden_id
+                },
+                dataType: 'JSON',
+                success: function(data) {
+                    field.validate();
+                    p_notify(data.message, 'success', Lang.get('service.success_title'));
+                },
+                error: function(data) {
+                    ajax_error(data);
+                }
+            });
+        } else {
+            field.validate();
+        }
+    });
+}
 $('#content_modal').on('hide.bs.modal', function() {
     hide_submit_loading();
     $('.modal-body').html('');

@@ -21,10 +21,14 @@ Route::group(['namespace' => 'Admin', 'middleware' => ['auth', 'active', 'auth',
 	Route::put('action/sales-commission-agents', 'SalesCommissionAgentController@action')->name('role.sales-commission-agents');
 	Route::resource('sales-commission-agents', 'SalesCommissionAgentController');
 
-	Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
+	Route::prefix('business-location/{location_id}')->name('business-location.')->group(function () {
 		Route::get('settings', 'LocationSettingsController@index')->name('settings');
 		Route::post('settings', 'LocationSettingsController@updateSettings')->name('settings_update');
 	});
+
+	Route::post('business-location/check-location-id', 'BusinessLocationController@checkLocationId');
+	Route::resource('business-location', 'BusinessLocationController');
+
 });
 
 Route::group(['middleware' => ['auth', 'active', 'auth', 'SetSessionData', 'timezone'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
