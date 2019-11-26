@@ -22,7 +22,7 @@
 			@endif
 			@if(!in_array('settings', $action['action_exeption']))
 			@can($action['permission'].'.settings')
-			<a class="dropdown-item" href="{{ route($action['route'].'settings', $model->id )}}"><i class="icon-cog"></i> {{ __('service.settings') }} </button></a>
+			<span class="dropdown-item" id="content_managment" data-id="{{ $model->id }}" data-url="{{ route($action['route'].'settings', $model->id )}}"><i class="icon-cog"></i> {{ __('service.settings') }} </button></span>
 			@endcan
 			@endif
 		</div>

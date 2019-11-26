@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BusinessLocation;
 use App\Models\InvoiceLayout;
 use App\Models\InvoiceScheme;
+use App\Models\Printer;
 use Illuminate\Http\Request;
 
 class LocationSettingsController extends Controller {
@@ -55,7 +56,7 @@ class LocationSettingsController extends Controller {
 			->get()
 			->pluck('name', 'id');
 
-		return view('location_settings.index')
+		return view('admin.location_settings.index')
 			->with(compact('location', 'printReceiptOnInvoice', 'receiptPrinterType', 'printers', 'invoice_layouts', 'invoice_schemes'));
 	}
 

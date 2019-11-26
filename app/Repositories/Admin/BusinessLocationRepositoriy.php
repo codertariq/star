@@ -166,6 +166,24 @@ class BusinessLocationRepositoriy extends Repository {
 	 */
 	private function formatParams($params, $model_id = null) {
 
+		$location_id = gv($params, 'location_id');
+
+		if ($location_id) {
+			$business_id = $this->getBussinessId();
+
+			$query = $this->getQuery()->where('business_id', $business_id)
+				->where('location_id', $location_id);
+
+			if ($model_id) {
+				$query->where('id', '!=', $model_id);
+			}
+			$count = $query->count();
+			if ($count) {
+				throw ValidationException::withMessages(['location_id' => __('validation.unique', ['attribute' => __('page.business_location')])]);
+			}
+
+		}
+
 		$formatted = [
 			'name' => gv($params, 'name'),
 			'landmark' => gv($params, 'landmark'),
@@ -203,31 +221,9 @@ class BusinessLocationRepositoriy extends Repository {
 	 */
 	public function update(BusinessLocation $model, $params) {
 		$model->forceFill($this->formatParams($params, $model->id))->save();
-		$this->assignPermission($model, $params);
 		return $model;
 	}
 
-	protected function assignPermission($role, $params) {
-		//Include location permissions
-		$permissions = gv($params, 'permissions');
-		$location_permissions = gv($params, 'location_permissions');
-		if (!in_array('access_all_locations', $permissions) &&
-			!empty($location_permissions)) {
-			foreach ($location_permissions as $location_permission) {
-				$permissions[] = $location_permission;
-			}
-		}
-		//Include selling price group permissions
-		$spg_permissions = gv($params, 'spg_permissions');
-		if (!empty($spg_permissions)) {
-			foreach ($spg_permissions as $spg_permission) {
-				$permissions[] = $spg_permission;
-			}
-		}
-		if (!empty($permissions)) {
-			$role->syncPermissions($permissions);
-		}
-	}
 	/**
 	 * Find model & check it can be deleted or not.
 	 *

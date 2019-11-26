@@ -83,4 +83,20 @@ class User extends Authenticatable {
 		}
 	}
 
+	/**
+	 * Returns if a user can access the input location
+	 *
+	 * @param: int $location_id
+	 * @return boolean
+	 */
+	public static function can_access_this_location($location_id) {
+		$permitted_locations = User::permitted_locations();
+
+		if ($permitted_locations == 'all' || in_array($location_id, $permitted_locations)) {
+			return true;
+		}
+
+		return false;
+	}
+
 }

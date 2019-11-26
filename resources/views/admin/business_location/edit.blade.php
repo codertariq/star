@@ -1,6 +1,6 @@
 @php
-$data['page'] = __('page.sales_commission_agents');
-$data['route'] = 'admin.sales-commission-agents.';
+$data['page'] = __('page.business_location');
+$data['route'] = 'admin.business-location.';
 @endphp
 <div class="row">
     <div class="col-md-12">

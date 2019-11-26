@@ -821,24 +821,12 @@
                     </label>
                 </div>
             </div>
-            {{--  @if(count($selling_price_groups) > 0)
-            @foreach($selling_price_groups as $selling_price_group)
-            <div class="col-md-12 form-check form-check-inline">
-                <div class="form-check form-check-inline">
-                    <label class="form-check-label">
-                        {!! Form::checkbox('spg_permissions[]', 'selling_price_group.' . $selling_price_group->id, in_array('user.view', $role_permissions),
-                        [ 'class' => 'form-check-input-styled', 'data-fouc']); !!} {{ $selling_price_group->name }}
-                    </label>
-                </div>
-            </div>
-            @endforeach
-            @endif --}}
+
         </div>
     </div>
     <div class="form-group row text-center">
         <div class="col-md-12">
             {{ Form::submit(__('service.submit', ['attribute' => gv($data, 'page')]), ['class' => 'btn btn-primary ml-3l', 'id' => 'submit']) }}
-            {{--   <button type="button" class="btn btn-link" id="submiting" style="display: none;" disabled="">{{ __('service.submiting', ['attribute' => gv($data, 'page')]) }} <img src="{{ asset('asset/ajaxloader.gif') }}"></button> --}}
             <button type="button" class="btn btn-danger" data-dismiss="modal"> {{  __('service.close', ['attribute' => gv($data, 'page')]) }} </button>
         </div>
     </div>

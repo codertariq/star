@@ -23,7 +23,6 @@ class BusinessLocationRequest extends FormRequest {
 
 		$rules = [
 			'name' => 'required|string|max:191',
-			'location_id' => 'sometimes|nullable|string|max:191|unique:business_locations,id,' . $this->business_location,
 			'city' => 'required|string|max:191',
 			'state' => 'required|string|max:191',
 			'country' => 'required|string|max:191',
