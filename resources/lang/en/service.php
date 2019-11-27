@@ -2,6 +2,7 @@
 
 return [
 	'not_loaded' => 'Warning - :attribute is not loaded',
+	'make_it_default' => 'Make It Default',
 	'not_found' => ':attribute not found',
 	'select' => 'Select :attribute',
 	'datatable_info' => 'Showing :start to :end of :total entries',
@@ -25,6 +26,7 @@ return [
 	'status_online_to_offline' => 'Change status from on-line to off-line',
 	'status_offline_to_online' => 'Change status from off-line to on-line',
 
+	'settings' => 'Setting',
 	'confirm' => 'Confirm',
 	'cancel' => 'Cancel',
 	'available' => ':attribute Avilable',

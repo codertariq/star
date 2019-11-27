@@ -51,9 +51,8 @@ var DatatableResponsive = function() {
                 extend: 'selected',
                 className: 'btn btn-danger',
                 text: 'Delete',
-                enable: false,
                 action: function(e, dt, node, config) {
-                    datatableSelectedRowsAction(dt, 'action/business-location', action = 'delete', msg = Lang.get('service.delete_message'));
+                    datatableSelectedRowsAction(dt, 'action/invoice-schemes', action = 'delete', msg = Lang.get('service.delete_message'));
                 }
             }],
             columns: [{
@@ -64,24 +63,24 @@ var DatatableResponsive = function() {
             }, {
                 data: 'name'
             },{
-                data: 'location_id'
+                data: 'prefix'
             },{
-                data: 'landmark'
+                data: 'start_number'
             },{
-                data: 'city'
+                data: 'invoice_count'
             }, {
-                data: 'zip_code'
-            },{
-                data: 'state'
-            },{
-                data: 'country'
-            },{
-                data: 'invoice_scheme'
-            },{
-                data: 'invoice_layout'
+                data: 'total_digits'
             }, {
                 data: 'action'
             }]
+        });
+        tariq.on('select', function(e, dt, type, indexes) {
+            if (type === 'row') {
+                var rows = tariq.rows(indexes).nodes().to$();
+                $.each(rows, function() {
+                    if ($(this).hasClass('is_default')) tariq.row($(this)).deselect();
+                })
+            }
         });
     };
     var _componentRemoteModalLoad = function() {

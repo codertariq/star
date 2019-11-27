@@ -2,7 +2,7 @@
 $data['page'] = __('page.business_location');
 $data['route'] = 'admin.business-location.';
 @endphp
-{!! Form::open(['url' => route('admin.business-location.settings_update', [$location->id]), 'method' => 'post', 'id' => 'bl_receipt_setting_form']) !!}
+{!! Form::open(['url' => route('admin.business-location.settings_update', [$location->id]), 'method' => 'post', 'id' => 'content_form']) !!}
 <fieldset class="mb-3">
     <legend class="text-uppercase font-size-sm font-weight-bold">
         {{ __('service.update', ['attribute' => gv($data, 'page'). ' '.__('service.settings')]) }}
@@ -24,7 +24,7 @@ $data['route'] = 'admin.business-location.';
         </div>
         <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('receipt_printer_type', __('receipt.receipt_printer_type') . ':*') !!} @show_tooltip(__('tooltip.receipt_printer_type'))
+                {!! Form::label('receipt_printer_type', __('receipt.receipt_printer_type'), ['class' => 'required']) !!} @show_tooltip(__('tooltip.receipt_printer_type'))
                 <div class="form-group-feedback form-group-feedback-right">
                     {!! Form::select('receipt_printer_type', $receiptPrinterType, $location->receipt_printer_type, ['class' => 'form-control select', 'required']); !!}
                     <div class="form-control-feedback form-control-feedback-sm">
@@ -39,30 +39,31 @@ $data['route'] = 'admin.business-location.';
         <div class="col-sm-4"
             id="location_printer_div">
             <div class="form-group">
-                {!! Form::label('printer_id', __('printer.receipt_printers') . ':*') !!}
+                {!! Form::label('printer_id', __('printer.receipt_printers'), ['class' => 'required']) !!}
                 <div class="form-group-feedback form-group-feedback-right">
-                    {!! Form::select('printer_id', $printers, $location->printer_id, ['class' => 'form-control select', 'required']); !!}
+                    {!! Form::select('printer_id', $printers, $location->printer_id, ['class' => 'form-control select']); !!}
                     <div class="form-control-feedback form-control-feedback-sm">
                         <i class="fa fa-share-alt"></i>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('invoice_layout_id', __('invoice.invoice_layout') . ':*') !!} @show_tooltip(__('tooltip.invoice_layout'))
-            </div>
-            <div class="form-group-feedback form-group-feedback-right">
-                {!! Form::select('invoice_layout_id', $invoice_layouts, $location->invoice_layout_id, ['class' => 'form-control select', 'required']); !!}
-                <div class="form-control-feedback form-control-feedback-sm">
-                    <i class="fa fa-info"></i>
+                {!! Form::label('invoice_layout_id', __('invoice.invoice_layout'), ['class' => 'required']) !!} @show_tooltip(__('tooltip.invoice_layout'))
+                <div class="form-group-feedback form-group-feedback-right">
+                    {!! Form::select('invoice_layout_id', $invoice_layouts, $location->invoice_layout_id, ['class' => 'form-control select', 'required']); !!}
+                    <div class="form-control-feedback form-control-feedback-sm">
+                        <i class="fa fa-info"></i>
+                    </div>
                 </div>
             </div>
         </div>
-
         <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('invoice_scheme_id', __('invoice.invoice_scheme') . ':*') !!} @show_tooltip(__('tooltip.invoice_scheme'))
+                {!! Form::label('invoice_scheme_id', __('invoice.invoice_scheme'), ['class' => 'required']) !!} @show_tooltip(__('tooltip.invoice_scheme'))
                 <div class="form-group-feedback form-group-feedback-right">
                     {!! Form::select('invoice_scheme_id', $invoice_schemes, $location->invoice_scheme_id, ['class' => 'form-control select', 'required']); !!}
                     <div class="form-control-feedback form-control-feedback-sm">
@@ -73,8 +74,8 @@ $data['route'] = 'admin.business-location.';
         </div>
     </div>
     <div class="form-group row text-center">
-        <div class="col-md-4">
-            {{ Form::submit(__('service.submit', ['attribute' => gv($data, 'page'). ' '. __('service.settings')]), ['class' => 'btn btn-primary ml-3l', 'id' => 'submit']) }}
+        <div class="col-md-12">
+            {{ Form::submit(__('service.submit', ['attribute' => gv($data, 'page'). ' '. __('service.settings')]), ['class' => 'btn btn-primary', 'id' => 'submit']) }}
             <button type="button" class="btn btn-danger" data-dismiss="modal"> {{  __('service.close', ['attribute' => gv($data, 'page')]) }} </button>
         </div>
     </div>
@@ -82,4 +83,20 @@ $data['route'] = 'admin.business-location.';
 {!! Form::close() !!}
 <script>
 _componentSelect2();
+if ($('select#receipt_printer_type').val() == 'printer') {
+    $('div#location_printer_div').removeClass('hide');
+} else {
+    $('div#location_printer_div').addClass('hide');
+}
+
+$('select#receipt_printer_type').change(function() {
+    var printer_type = $(this).val();
+    if (printer_type == 'printer') {
+        $('div#location_printer_div').removeClass('hide');
+        $('select#printer_id').attr('required', true);
+    } else {
+        $('div#location_printer_div').addClass('hide');
+        $('select#printer_id').attr('required', false);
+    }
+});
 </script>

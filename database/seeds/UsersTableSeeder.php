@@ -53,6 +53,9 @@ class UsersTableSeeder extends Seeder {
 			'business_id' => $business->id,
 			'name' => 'Default',
 			'scheme_type' => 'year',
+			'total_digits' => 4,
+			'is_default' => 1,
+			'start_number' => 1,
 		]);
 
 		BusinessLocation::create([

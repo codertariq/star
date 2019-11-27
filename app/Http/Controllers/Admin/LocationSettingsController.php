@@ -90,5 +90,7 @@ class LocationSettingsController extends Controller {
 		$location->fill($input);
 		$location->update();
 
+		return response()->json(['message' => __('service.updated_successfull', ['attribute' => __('page.business_location') . ' ' . __('service.settings')])]);
+
 	}
 }

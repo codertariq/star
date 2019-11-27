@@ -28,3 +28,8 @@ Breadcrumbs::for ('business-location.index', function ($trail) {
 	$trail->push(__('page.home'), route('home'));
 	$trail->push(__('page.business_location'), route('admin.business-location.index'));
 });
+
+Breadcrumbs::for ('invoice-schemes.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.invoice_schemes'), route('admin.invoice-schemes.index'));
+});

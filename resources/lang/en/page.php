@@ -8,6 +8,7 @@ return [
 	'role_title' => 'Role Management',
 	'home_title' => 'Dashboard',
 	'settings_title' => 'Settings Management',
+	'invoice_schemes_title' => 'Invoice Scheme Management',
 	'business_location_title' => 'Business Location Management',
 	'sales_commission_agents_title' => 'Sales Commission Agents Management',
 	'home' => 'Home',
@@ -16,6 +17,7 @@ return [
 	'role' => 'Role',
 	'settings' => 'Settitngs',
 	'business_location' => 'Business Location',
+	'invoice_schemes' => 'Invoice Scheme',
 	'new' => 'New :attribute',
 
 	'username' => 'User Name',

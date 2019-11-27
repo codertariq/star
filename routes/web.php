@@ -26,8 +26,13 @@ Route::group(['namespace' => 'Admin', 'middleware' => ['auth', 'active', 'auth',
 		Route::post('settings', 'LocationSettingsController@updateSettings')->name('settings_update');
 	});
 
+	Route::put('action/business-location', 'BusinessLocationController@action')->name('role.sales-commission-agents');
 	Route::post('business-location/check-location-id', 'BusinessLocationController@checkLocationId');
 	Route::resource('business-location', 'BusinessLocationController');
+
+	Route::put('action/invoice-schemes', 'InvoiceSchemeController@action')->name('role.sales-commission-agents');
+	Route::delete('/invoice-schemes/set_default/{id}', 'InvoiceSchemeController@set_default')->name('invoice-schemes.set_default');
+	Route::resource('invoice-schemes', 'InvoiceSchemeController');
 
 });
 

@@ -60,7 +60,7 @@ var _componentSelect2 = function() {
         dropdownParent: $("#content_modal .modal-content")
     });
 
-     $('.card-body .select').select2({
+    $('.card-body .select').select2({
         // dropdownAutoWidth: true,
     });
 };
@@ -166,7 +166,7 @@ $(document).on('click', '#change_status', function(e) {
                     processData: false,
                     dataType: 'JSON',
                     data: {
-                        status: status
+                        action: status
                     },
                     success: function(data) {
                         ajax_success(data);
@@ -180,6 +180,45 @@ $(document).on('click', '#change_status', function(e) {
             } else {
                 $('#status_loading_' + row).hide();
                 $('#status_' + row).show();
+            }
+        });
+});
+$(document).on('click', '#set_default', function(e) {
+    e.preventDefault();
+    var row = $(this).data('id');
+    var url = $(this).data('url');
+    var status = $(this).data('status');
+    msg = Lang.get('service.make_it_default');
+    
+    $('#action_menu_' + row).hide();
+    $('#delete_loading_' + row).show();
+    swalInit({
+            title: Lang.get('service.are_you_sure'),
+            text: msg,
+            type: 'warning',
+            allowOutsideClick: false
+        })
+        .then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: url,
+                    method: 'Delete',
+                    dataType: 'JSON',
+                    data: {
+                        action: status
+                    },
+                    success: function(data) {
+                        ajax_success(data);
+                    },
+                    error: function(data) {
+                        ajax_error(data);
+                        $('#delete_loading_' + row).hide();
+                $('#action_menu_' + row).show();
+                    }
+                });
+            } else {
+                $('#delete_loading_' + row).hide();
+                $('#action_menu_' + row).show();
             }
         });
 });
@@ -583,6 +622,7 @@ function checkUsername() {
         }
     });
 }
+
 function checkLocationId() {
     $(document).on('change', '#location_id', function() {
         $('.parsley-required').remove();
@@ -622,3 +662,63 @@ $('#content_modal').on('shown.bs.modal', function(e) {
         ele.focus();
     }
 });
+
+
+$(document).on('click', '.option-div-group .option-div', function() {
+    $(this)
+        .closest('.option-div-group')
+        .find('.option-div')
+        .each(function() {
+            $(this).removeClass('active');
+        });
+    $(this).addClass('active');
+    $(this)
+        .find('input:radio')
+        .prop('checked', true)
+        .change();
+});
+
+$(document).on('change', 'input[type=radio][name=scheme_type]', function() {
+    $('#invoice_format_settings').removeClass('hide');
+    var scheme_type = $(this).val();
+    if (scheme_type == 'blank') {
+        $('#prefix')
+            .val('')
+            .attr('placeholder', 'XXXX')
+            .prop('disabled', false);
+    } else if (scheme_type == 'year') {
+        var d = new Date();
+        var this_year = d.getFullYear();
+        $('#prefix')
+            .val(this_year + '-')
+            .attr('placeholder', '')
+            .prop('disabled', true);
+    }
+    show_invoice_preview();
+});
+
+$(document).on('change', '#prefix', function() {
+    show_invoice_preview();
+});
+$(document).on('keyup', '#prefix', function() {
+    show_invoice_preview();
+});
+$(document).on('keyup', '#start_number', function() {
+    show_invoice_preview();
+});
+$(document).on('change', '#total_digits', function() {
+    show_invoice_preview();
+});
+
+function show_invoice_preview() {
+    var prefix = $('#prefix').val();
+    var start_number = $('#start_number').val();
+    var total_digits = $('#total_digits').val();
+    var preview = prefix + pad_zero(start_number, total_digits);
+    $('#preview_format').text('#' + preview);
+}
+
+function pad_zero(str, max) {
+    str = str.toString();
+    return str.length < max ? pad_zero('0' + str, max) : str;
+}
