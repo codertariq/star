@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 class Repository {
-	protected $model;
+	public $model;
 	protected $permission;
 	protected $route;
 	protected $action_exeption;

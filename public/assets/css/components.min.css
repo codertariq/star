@@ -20,3 +20,21 @@
 .option-div-group .active .icon{
     display: block;
 }
+
+.layout-link{
+  text-align:center;
+  display:block;
+  margin-bottom: 18px;
+}
+.layout-link > a {
+    display:grid;
+}
+.layout-link > .badge{
+    position: absolute;
+    top: 20px;
+    right: 67px;
+}
+.link-des {
+    display: inline-block;
+    text-align: left;
+}

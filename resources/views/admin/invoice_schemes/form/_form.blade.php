@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-4">
+      <div class="col-sm-4  my-auto">
         <div class="form-group">
           <label>@lang('invoice.preview'):</label>
           <div id="preview_format">@lang('invoice.not_selected')</div>

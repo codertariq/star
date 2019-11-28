@@ -47,7 +47,7 @@ var DatatableResponsive = function() {
                 extend: 'selectNone',
                 className: 'btn bg-blue-800',
                 text: 'Unselect All'
-            }, {
+            }, /*{
                 extend: 'selected',
                 className: 'btn btn-danger',
                 text: 'Delete',
@@ -55,7 +55,7 @@ var DatatableResponsive = function() {
                 action: function(e, dt, node, config) {
                     datatableSelectedRowsAction(dt, 'action/business-location', action = 'delete', msg = Lang.get('service.delete_message'));
                 }
-            }],
+            }*/],
             columns: [{
                 defaultContent: '',
             }, {

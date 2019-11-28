@@ -49,7 +49,7 @@
 		@endif
 		<!-- User Panel -->
 		@php
-		$user_page = ['admin.business.getBusinessSettings', 'admin.business-location.index', 'admin.invoice-schemes.index'];
+		$user_page = ['admin.business.getBusinessSettings', 'admin.business-location.index', 'admin.invoice-schemes.index', 'admin.invoice-layouts.index'];
 		@endphp
 		@if(auth()->user()->can('business_settings.access') ||
 		auth()->user()->can('barcode_settings.access') ||
@@ -78,6 +78,12 @@
 				<li class="nav-item">
 					<a href="{{ route('admin.invoice-schemes.index') }}" class="nav-link {{ active_link('admin.invoice-schemes.index') }}">
 						<i class="fa fa-file"></i>
+						<span>@lang('invoice.invoice_settings')</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="{{ route('admin.invoice-layouts.index') }}" class="nav-link {{ active_link('admin.invoice-layouts.index') }}">
+						<i class="icon-color-sampler"></i>
 						<span>@lang('invoice.invoice_settings')</span>
 					</a>
 				</li>

@@ -33,3 +33,14 @@ Breadcrumbs::for ('invoice-schemes.index', function ($trail) {
 	$trail->push(__('page.home'), route('home'));
 	$trail->push(__('page.invoice_schemes'), route('admin.invoice-schemes.index'));
 });
+
+Breadcrumbs::for ('invoice-layouts.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.invoice_layouts'), route('admin.invoice-layouts.index'));
+});
+
+Breadcrumbs::for ('invoice-layouts.create', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.invoice_layouts'), route('admin.invoice-layouts.index'));
+	$trail->push(__('page.new', ['attribute' => __('page.invoice_layouts')]), route('admin.invoice-layouts.create'));
+});

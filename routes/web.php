@@ -34,6 +34,8 @@ Route::group(['namespace' => 'Admin', 'middleware' => ['auth', 'active', 'auth',
 	Route::delete('/invoice-schemes/set_default/{id}', 'InvoiceSchemeController@set_default')->name('invoice-schemes.set_default');
 	Route::resource('invoice-schemes', 'InvoiceSchemeController');
 
+	Route::resource('invoice-layouts', 'InvoiceLayoutController');
+
 });
 
 Route::group(['middleware' => ['auth', 'active', 'auth', 'SetSessionData', 'timezone'], 'prefix' => 'admin', 'as' => 'admin.'], function () {

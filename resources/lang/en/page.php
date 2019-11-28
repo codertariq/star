@@ -9,6 +9,7 @@ return [
 	'home_title' => 'Dashboard',
 	'settings_title' => 'Settings Management',
 	'invoice_schemes_title' => 'Invoice Scheme Management',
+	'invoice_layouts_title' => 'Invoice Layouts Management',
 	'business_location_title' => 'Business Location Management',
 	'sales_commission_agents_title' => 'Sales Commission Agents Management',
 	'home' => 'Home',
@@ -18,6 +19,7 @@ return [
 	'settings' => 'Settitngs',
 	'business_location' => 'Business Location',
 	'invoice_schemes' => 'Invoice Scheme',
+	'invoice_layouts' => 'Invoice Layouts',
 	'new' => 'New :attribute',
 
 	'username' => 'User Name',
