@@ -119,30 +119,99 @@ class InvoiceLayoutRepositoriy extends Repository {
 	 */
 	private function formatParams($params, $model_id = null) {
 
-		$location_id = gv($params, 'location_id');
-
-		if ($location_id) {
-			$business_id = $this->getBussinessId();
-
-			$query = $this->getQuery()->where('business_id', $business_id)
-				->where('location_id', $location_id);
-
-			if ($model_id) {
-				$query->where('id', '!=', $model_id);
-			}
-			$count = $query->count();
-			if ($count) {
-				throw ValidationException::withMessages(['location_id' => __('validation.unique', ['attribute' => __('page.business_location')])]);
-			}
-
+		//Upload Logo
+		$logo_name = $this->commonUtil->uploadFile($request, 'logo', 'invoice_logos');
+		if (!empty($logo_name)) {
+			$input['logo'] = $logo_name;
 		}
+
+		if (!empty($request->input('is_default'))) {
+			//get_default
+			$default = InvoiceLayout::where('business_id', $business_id)
+				->where('is_default', 1)
+				->update(['is_default' => 0]);
+			$input['is_default'] = 1;
+		}
+
+		//Module info
+		if ($request->has('module_info')) {
+			$input['module_info'] = json_encode($request->input('module_info'));
+		}
+
+		if (!empty($request->input('table_tax_headings'))) {
+			$input['table_tax_headings'] = json_encode($request->input('table_tax_headings'));
+		}
+		$input['product_custom_fields'] = !empty($request->input('product_custom_fields')) ? $request->input('product_custom_fields') : null;
+		$input['contact_custom_fields'] = !empty($request->input('contact_custom_fields')) ? $request->input('contact_custom_fields') : null;
+		$input['location_custom_fields'] = !empty($request->input('location_custom_fields')) ? $request->input('location_custom_fields') : null;
+
+		InvoiceLayout::create($input);
 
 		$formatted = [
 			'name' => gv($params, 'name'),
-			'scheme_type' => gv($params, 'scheme_type', 'blank'),
-			'prefix' => gv($params, 'prefix'),
-			'start_number' => gv($params, 'start_number', 0),
-			'total_digits' => gv($params, 'total_digits', 4),
+			'header_text' => gv($params, 'header_text', 'blank'),
+			'invoice_no_prefix' => gv($params, 'invoice_no_prefix'),
+			'invoice_heading' => gv($params, 'invoice_heading'),
+			'sub_total_label' => gv($params, 'sub_total_label'),
+			'discount_label' => gv($params, 'discount_label'),
+			'tax_label' => gv($params, 'tax_label'),
+			'total_label' => gv($params, 'total_label'),
+			'highlight_color' => gv($params, 'highlight_color'),
+			'footer_text' => gv($params, 'footer_text'),
+			'invoice_heading_not_paid' => gv($params, 'invoice_heading_not_paid'),
+			'invoice_heading_paid' => gv($params, 'invoice_heading_paid'),
+			'total_due_label' => gv($params, 'total_due_label'),
+			'customer_label' => gv($params, 'customer_label'),
+			'paid_label' => gv($params, 'paid_label'),
+			'sub_heading_line1' => gv($params, 'sub_heading_line1'),
+			'sub_heading_line2' => gv($params, 'sub_heading_line2'),
+			'sub_heading_line3' => gv($params, 'sub_heading_line3'),
+			'sub_heading_line4' => gv($params, 'sub_heading_line4'),
+			'sub_heading_line5' => gv($params, 'sub_heading_line5'),
+			'table_product_label' => gv($params, 'table_product_label'),
+			'table_qty_label' => gv($params, 'table_qty_label'),
+			'table_unit_price_label' => gv($params, 'table_unit_price_label'),
+			'table_subtotal_label' => gv($params, 'table_subtotal_label'),
+			'client_id_label' => gv($params, 'client_id_label'),
+			'date_label' => gv($params, 'date_label'),
+			'quotation_heading' => gv($params, 'quotation_heading'),
+			'quotation_no_prefix' => gv($params, 'quotation_no_prefix'),
+			'design' => gv($params, 'design'),
+			'client_tax_label' => gv($params, 'client_tax_label'),
+			'cat_code_label' => gv($params, 'cat_code_label'),
+			'cn_heading' => gv($params, 'cn_heading'),
+			'cn_no_label' => gv($params, 'cn_no_label'),
+			'cn_amount_label' => gv($params, 'cn_amount_label'),
+			'sales_person_label' => gv($params, 'sales_person_label'),
+			'prev_bal_label' => gv($params, 'prev_bal_label'),
+			'date_time_format' => gv($params, 'date_time_format'),
+
+			'show_business_name' => gbv($params, 'show_business_name'),
+			'show_location_name' => gbv($params, 'show_location_name'),
+			'show_landmark' => gbv($params, 'show_landmark'),
+			'show_city' => gbv($params, 'show_city'),
+			'show_state' => gbv($params, 'show_state'),
+			'show_country' => gbv($params, 'show_country'),
+			'show_zip_code' => gbv($params, 'show_zip_code'),
+			'show_mobile_number' => gbv($params, 'show_mobile_number'),
+			'show_alternate_number' => gbv($params, 'show_alternate_number'),
+			'show_email' => gbv($params, 'show_email'),
+			'show_tax_1' => gbv($params, 'show_tax_1'),
+			'show_tax_2' => gbv($params, 'show_tax_2'),
+			'show_logo' => gbv($params, 'show_logo'),
+			'show_barcode' => gbv($params, 'show_barcode'),
+			'show_payments' => gbv($params, 'show_payments'),
+			'show_customer' => gbv($params, 'show_customer'),
+			'show_client_id' => gbv($params, 'show_client_id'),
+			'show_brand' => gbv($params, 'show_brand'),
+			'show_sku' => gbv($params, 'show_sku'),
+			'show_cat_code' => gbv($params, 'show_cat_code'),
+			'show_sale_description' => gbv($params, 'show_sale_description'),
+			'show_sales_person' => gbv($params, 'show_sales_person'),
+			'show_expiry' => gbv($params, 'show_expiry'),
+			'show_lot' => gbv($params, 'show_lot'),
+			'show_previous_bal' => gbv($params, 'show_previous_bal'),
+			'show_image' => gbv($params, 'show_image'),
 			'business_id' => $this->getBussinessId(),
 		];
 

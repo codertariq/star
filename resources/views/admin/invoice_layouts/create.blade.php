@@ -53,10 +53,21 @@ $data['page_index'] = 'admin.invoice-layouts.index';
 </div>
 @stop
 @push('js')
+<script src="{{ asset('global_assets/js/plugins/editors/summernote/summernote.min.js') }}"></script>
 <script src="{{ asset('js/pages/admin/invoice_layouts.js') }}"></script>
 <script>
 	_componentTooltipCustomColor();
 _componentSelect2();
 _componentUniform();
+$('.summernote').summernote({
+	toolbar: [
+    ['style', ['bold', 'italic', 'underline', 'clear']],
+    ['font', ['strikethrough', 'superscript', 'subscript']],
+    ['fontsize', ['fontsize']],
+    ['color', ['color']],
+    ['para', ['ul', 'ol', 'paragraph']],
+    ['height', ['height']]
+  ]
+});
 </script>
 @endpush
