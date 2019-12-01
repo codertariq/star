@@ -18,7 +18,8 @@
               <span class="help-block">Used for browser based printing</span>
             </div>
             <div class="form-group hide" id="columnize-taxes">
-              <div class="col-sm-12 col-md-6 col-lg-3">
+              <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
                 <input type="text" class="form-control"
                 name="table_tax_headings[]" required="required"
                 placeholder="tax 1 name"
@@ -40,6 +41,8 @@
                 name="table_tax_headings[]" placeholder="tax 4 name"
                 disabled>
               </div>
+              </div>
+
             </div>
           </div>
           <!-- Logo -->
@@ -719,7 +722,6 @@
   <div class="form-group row text-center">
     <div class="col-md-12">
       {{ Form::submit(__('service.submit', ['attribute' => gv($data, 'page')]), ['class' => 'btn btn-primary ml-3l', 'id' => 'submit']) }}
-      <button type="button" class="btn btn-danger" data-dismiss="modal"> {{  __('service.close', ['attribute' => gv($data, 'page')]) }} </button>
     </div>
   </div>
 </fieldset>

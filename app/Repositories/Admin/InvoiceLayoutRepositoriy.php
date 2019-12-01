@@ -96,6 +96,12 @@ class InvoiceLayoutRepositoriy extends Repository {
 			'detailed' => 'Detailed',
 			'columnize-taxes' => 'Columnize Taxes',
 		];
+		if ($id) {
+			$model =
+			$invoice_layout->module_info = json_decode($invoice_layout->module_info, true);
+			$invoice_layout->table_tax_headings = !empty($invoice_layout->table_tax_headings) ? json_decode($invoice_layout->table_tax_headings) : ['', '', '', ''];
+
+		}
 		$compact = compact('designs');
 
 		return $compact;
@@ -119,37 +125,9 @@ class InvoiceLayoutRepositoriy extends Repository {
 	 */
 	private function formatParams($params, $model_id = null) {
 
-		//Upload Logo
-		$logo_name = $this->commonUtil->uploadFile($request, 'logo', 'invoice_logos');
-		if (!empty($logo_name)) {
-			$input['logo'] = $logo_name;
-		}
-
-		if (!empty($request->input('is_default'))) {
-			//get_default
-			$default = InvoiceLayout::where('business_id', $business_id)
-				->where('is_default', 1)
-				->update(['is_default' => 0]);
-			$input['is_default'] = 1;
-		}
-
-		//Module info
-		if ($request->has('module_info')) {
-			$input['module_info'] = json_encode($request->input('module_info'));
-		}
-
-		if (!empty($request->input('table_tax_headings'))) {
-			$input['table_tax_headings'] = json_encode($request->input('table_tax_headings'));
-		}
-		$input['product_custom_fields'] = !empty($request->input('product_custom_fields')) ? $request->input('product_custom_fields') : null;
-		$input['contact_custom_fields'] = !empty($request->input('contact_custom_fields')) ? $request->input('contact_custom_fields') : null;
-		$input['location_custom_fields'] = !empty($request->input('location_custom_fields')) ? $request->input('location_custom_fields') : null;
-
-		InvoiceLayout::create($input);
-
 		$formatted = [
 			'name' => gv($params, 'name'),
-			'header_text' => gv($params, 'header_text', 'blank'),
+			'header_text' => gv($params, 'header_text'),
 			'invoice_no_prefix' => gv($params, 'invoice_no_prefix'),
 			'invoice_heading' => gv($params, 'invoice_heading'),
 			'sub_total_label' => gv($params, 'sub_total_label'),
@@ -185,6 +163,9 @@ class InvoiceLayoutRepositoriy extends Repository {
 			'sales_person_label' => gv($params, 'sales_person_label'),
 			'prev_bal_label' => gv($params, 'prev_bal_label'),
 			'date_time_format' => gv($params, 'date_time_format'),
+			'product_custom_fields' => gv($params, 'product_custom_fields'),
+			'contact_custom_fields' => gv($params, 'contact_custom_fields'),
+			'location_custom_fields' => gv($params, 'location_custom_fields'),
 
 			'show_business_name' => gbv($params, 'show_business_name'),
 			'show_location_name' => gbv($params, 'show_location_name'),
@@ -214,13 +195,20 @@ class InvoiceLayoutRepositoriy extends Repository {
 			'show_image' => gbv($params, 'show_image'),
 			'business_id' => $this->getBussinessId(),
 		];
-
+		$logo_name = $this->commonUtil->uploadFile($params, 'logo', 'invoice_logos');
+		if (!empty($logo_name)) {
+			$formatted['logo'] = $logo_name;
+		}
 		if (gv($params, 'is_default')) {
 			//get_default
 			$default = $this->model->where('business_id', $this->getBussinessId())
 				->where('is_default', 1)
 				->update(['is_default' => 0]);
 			$formatted['is_default'] = 1;
+		}
+
+		if (gv($params, 'table_tax_headings')) {
+			$formatted['table_tax_headings'] = json_encode($params['table_tax_headings']);
 		}
 
 		return $formatted;

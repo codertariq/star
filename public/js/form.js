@@ -15,7 +15,9 @@ var FormHandle = function() {
 
     // Basic Datatable examples
     var _componentValidation = function(form) {
-        form.parsley().on('field:validated', function() {
+        form.parsley({
+            'excluded': ':disabled'
+        }).on('field:validated', function() {
             const ok = $('.parsley-error').length === 0;
             $('.bs-callout-info').toggleClass('hidden', !ok);
             $('.bs-callout-warning').toggleClass('hidden', ok);
@@ -27,6 +29,7 @@ var FormHandle = function() {
     var _componentSubmit = function(form) {
         form.on('submit', function(e) {
             e.preventDefault();
+            console.log(form);
             $('.parsley-required').remove();
             const submit = $('#submit');
             show_submit_loading(submit);

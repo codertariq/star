@@ -51,7 +51,6 @@ $data['page_index'] = 'admin.invoice-layouts.index';
 		</div>
 		<div class="card-body">
 			<div class="row">
-				<div class="col-md-12">
 					@foreach( $models as $layout)
 					<div class="col-md-3">
 						<div class="layout-link">
@@ -76,12 +75,11 @@ $data['page_index'] = 'admin.invoice-layouts.index';
 							@endif
 						</div>
 					</div>
-					@if( $loop->iteration % 4 == 0 )
+					{{-- @if( $loop->iteration % 4 == 0 )
 					<div class="clearfix"></div>
-					@endif
+					@endif --}}
 					@endforeach
 				</div>
-			</div>
 		</div>
 	</div>
 </div>

@@ -69,5 +69,20 @@ $('.summernote').summernote({
     ['height', ['height']]
   ]
 });
+
+$('select#design').change(function() {
+    if ($(this).val() == 'columnize-taxes') {
+        $('div#columnize-taxes').removeClass('hide');
+        $('div#columnize-taxes')
+            .find('input')
+            .removeAttr('disabled', 'false');
+
+    } else {
+        $('div#columnize-taxes').addClass('hide');
+        $('div#columnize-taxes')
+            .find('input')
+            .attr('disabled', 'true');
+    }
+});
 </script>
 @endpush

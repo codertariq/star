@@ -469,10 +469,11 @@ class Util {
 		}
 
 		$uploaded_file_name = null;
-		if ($request->hasFile($file_name) && $request->file($file_name)->isValid()) {
-			if ($request->$file_name->getSize() <= config('constants.document_size_limit')) {
-				$new_file_name = time() . '_' . $request->$file_name->getClientOriginalName();
-				if ($request->$file_name->storeAs($dir_name, $new_file_name)) {
+		$file = gv($request, $file_name);
+		if ($file) {
+			if ($file->getSize() <= config('constants.document_size_limit')) {
+				$new_file_name = time() . '_' . $file->getClientOriginalName();
+				if ($file->storeAs($dir_name, $new_file_name)) {
 					$uploaded_file_name = $new_file_name;
 				}
 			}
