@@ -96,13 +96,15 @@ class InvoiceLayoutRepositoriy extends Repository {
 			'detailed' => 'Detailed',
 			'columnize-taxes' => 'Columnize Taxes',
 		];
+
+		$compact = compact('designs');
 		if ($id) {
-			$model =
-			$invoice_layout->module_info = json_decode($invoice_layout->module_info, true);
-			$invoice_layout->table_tax_headings = !empty($invoice_layout->table_tax_headings) ? json_decode($invoice_layout->table_tax_headings) : ['', '', '', ''];
+			$model = $this->findOrFail($id);
+			$model->module_info = json_decode($model->module_info, true);
+			$model->table_tax_headings = !empty($model->table_tax_headings) ? json_decode($model->table_tax_headings) : ['', '', '', ''];
+			$compact = compact('model', 'designs');
 
 		}
-		$compact = compact('designs');
 
 		return $compact;
 	}

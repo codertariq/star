@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\InvoiceLayoutRequest;
-use App\Repositories\Admin\InvoiceLayoutRepositoriy;
+use App\Http\Requests\BarcodeRequest;
+use App\Repositories\Admin\BarcodeRepositoriy;
 use Illuminate\Http\Request;
 
-class InvoiceLayoutController extends Controller {
+class BarcodeController extends Controller {
 
 	protected $request;
 	protected $repo;
-	public function __construct(Request $request, InvoiceLayoutRepositoriy $repo) {
+	public function __construct(Request $request, BarcodeRepositoriy $repo) {
 		$this->request = $request;
 		$this->repo = $repo;
 	}
@@ -22,12 +22,13 @@ class InvoiceLayoutController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index() {
-		if (!auth()->user()->can('invoice_settings.access')) {
+		if (!auth()->user()->can('business_settings.access')) {
 			abort(403, 'Unauthorized action.');
 		}
-		$models = $this->repo->model->where('business_id', $this->repo->getBussinessId())->with(['locations'])
-			->get();
-		return view('admin.invoice_layouts.index', compact('models'));
+		if ($this->request->ajax() and $this->request->get == 'datatable') {
+			return $this->repo->datatable();
+		}
+		return view('admin.barcodes.index');
 	}
 
 	/**
@@ -36,11 +37,10 @@ class InvoiceLayoutController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function create() {
-		if (!auth()->user()->can('invoice_settings.access')) {
+		if (!auth()->user()->can('business_settings.access')) {
 			abort(403, 'Unauthorized action.');
 		}
-		$pre_requisite = $this->repo->preRequisite();
-		return view('admin.invoice_layouts.create', $pre_requisite);
+		return view('admin.barcodes.create');
 	}
 
 	/**
@@ -49,13 +49,13 @@ class InvoiceLayoutController extends Controller {
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store(InvoiceLayoutRequest $request) {
-		if (!auth()->user()->can('invoice_settings.access')) {
+	public function store(BarcodeRequest $request) {
+		if (!auth()->user()->can('business_settings.access')) {
 			abort(403, 'Unauthorized action.');
 		}
 
 		$this->repo->create($this->request->all());
-		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.invoice_layouts')]), 'goto' => route('admin.invoice-layouts.index')]);
+		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.barcodes')])]);
 	}
 
 	/**
@@ -65,13 +65,14 @@ class InvoiceLayoutController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function show($id) {
-		if (!auth()->user()->can('invoice_settings.access')) {
-			abort(403, 'Unauthorized action.');
-		}
+		abort(404);
+		// if (!auth()->user()->can('business_settings.access')) {
+		// 	abort(403, 'Unauthorized action.');
+		// }
 
-		// $model = $this->repo->getQuery()->with(['contactAccess'])->findOrFail($id);
-		$model = $this->repo->findOrFail($id);
-		return view('admin.invoice_layouts.show', compact('model'));
+		// // $model = $this->repo->getQuery()->with(['contactAccess'])->findOrFail($id);
+		// $model = $this->repo->findOrFail($id);
+		// return view('admin.barcodes.show', compact('model'));
 	}
 
 	/**
@@ -81,12 +82,12 @@ class InvoiceLayoutController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function edit($id) {
-		if (!auth()->user()->can('invoice_settings.access')) {
+		if (!auth()->user()->can('business_settings.access')) {
 			abort(403, 'Unauthorized action.');
 		}
 
-		$pre_requisite = $this->repo->preRequisite($id);
-		return view('admin.invoice_layouts.edit', $pre_requisite);
+		$model = $this->repo->findOrFail($id);
+		return view('admin.barcodes.edit', compact('model'));
 	}
 
 	/**
@@ -96,13 +97,13 @@ class InvoiceLayoutController extends Controller {
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update(InvoiceLayoutRequest $request, $id) {
+	public function update(BarcodeRequest $request, $id) {
 
-		if (!auth()->user()->can('invoice_settings.access')) {
+		if (!auth()->user()->can('business_settings.access')) {
 			abort(403, 'Unauthorized action.');
 		}$model = $this->repo->findOrFail($id);
 		$this->repo->update($model, $this->request->all());
-		return response()->json(['message' => __('service.updated_successfull', ['attribute' => __('page.invoice_layouts')]), 'goto' => route('admin.invoice-layouts.index')]);
+		return response()->json(['message' => __('service.updated_successfull', ['attribute' => __('page.barcodes')])]);
 	}
 
 	/**
@@ -112,29 +113,29 @@ class InvoiceLayoutController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($id) {
-		if (!auth()->user()->can('invoice_settings.access')) {
+		if (!auth()->user()->can('business_settings.access')) {
 			abort(403, 'Unauthorized action.');
 		}
 		$model = $this->repo->findOrFail($id);
 		if ($this->request->action and $this->request->action == 'status') {
 
 			$this->repo->updateStatus($model);
-			return response()->json(['message' => __('service.status_updated', ['attribute' => __('page.invoice_layouts')])]);
+			return response()->json(['message' => __('service.status_updated', ['attribute' => __('page.barcodes')])]);
 		}
 		$this->repo->deletable($id);
 		$this->repo->delete($model);
-		return response()->json(['message' => __('service.deleted', ['attribute' => __('page.invoice_layouts')])]);
+		return response()->json(['message' => __('service.deleted', ['attribute' => __('page.barcodes')])]);
 
 	}
 
 	public function set_default($id) {
-		if (!auth()->user()->can('invoice_settings.access')) {
+		if (!auth()->user()->can('business_settings.access')) {
 			abort(403, 'Unauthorized action.');
 		}
 		$model = $this->repo->updateable($id);
 		$this->repo->updateStatus($model);
-		return response()->json(['message' => __('service.status_updated', ['attribute' => __('page.invoice_layouts')])]);
-		return response()->json(['message' => __('service.deleted', ['attribute' => __('page.invoice_layouts')])]);
+		return response()->json(['message' => __('service.status_updated', ['attribute' => __('page.barcodes')])]);
+		return response()->json(['message' => __('service.deleted', ['attribute' => __('page.barcodes')])]);
 
 	}
 
@@ -145,7 +146,7 @@ class InvoiceLayoutController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function action() {
-		if (!auth()->user()->can('invoice_settings.access')) {
+		if (!auth()->user()->can('business_settings.access')) {
 			abort(403, 'Unauthorized action.');
 		}
 
@@ -154,7 +155,7 @@ class InvoiceLayoutController extends Controller {
 		}
 
 		if (!$this->request->ids or !count($this->request->ids)) {
-			throw ValidationException::withMessages(['message' => trans_choice('service.multiple_deleted', 0, ['attribute' => __('page.invoice_layouts')])]);
+			throw ValidationException::withMessages(['message' => trans_choice('service.multiple_deleted', 0, ['attribute' => __('page.barcodes')])]);
 		}
 
 		$action = $this->repo->actions($this->request->all());

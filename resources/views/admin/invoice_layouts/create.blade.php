@@ -8,7 +8,7 @@ $data['page'] = __('page.invoice_layouts');
 $data['page_title'] = __('page.new', ['attribute' => gv($data, 'page', __('page.home'))]);
 $data['permission'] = 'user.';
 $data['route'] = 'admin.invoice-layouts.';
-$data['page_index'] = 'admin.invoice-layouts.index';
+$data['page_index'] = 'admin.invoice-layouts.create';
 @endphp
 {{-- Main Layout for This Page --}}
 @extends('layouts.app', ['data' => $data])

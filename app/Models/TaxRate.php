@@ -3,8 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TaxRate extends Model {
+
+	use SoftDeletes;
+	/**
+	 * The attributes that should be mutated to dates.
+	 *
+	 * @var array
+	 */
+	protected $dates = ['deleted_at'];
+
+	/**
+	 * The attributes that aren't mass assignable.
+	 *
+	 * @var array
+	 */
+	protected $guarded = ['id'];
+
 	/**
 	 * Return list of tax rate dropdown for a business
 	 *
@@ -38,5 +55,14 @@ class TaxRate extends Model {
 
 		$output = ['tax_rates' => $tax_rates, 'attributes' => $tax_attributes];
 		return $output;
+	}
+
+	/**
+	 * Return list of tax rates associated with the group_tax
+	 *
+	 * @return object
+	 */
+	public function sub_taxes() {
+		return $this->belongsToMany(TaxRate::class, 'group_sub_taxes', 'group_tax_id', 'tax_id');
 	}
 }

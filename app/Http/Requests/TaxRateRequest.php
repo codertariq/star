@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class InvoiceLayoutRequest extends FormRequest {
+class TaxRateRequest extends FormRequest {
 	/**
 	 * Determine if the user is authorized to make this request.
 	 *
@@ -22,8 +22,17 @@ class InvoiceLayoutRequest extends FormRequest {
 	public function rules() {
 
 		$rules = [
-			'name' => 'required|string|max:190',
-			'logo' => 'mimes:jpeg,gif,png|1000',
+			'name' => 'required|string|max:191',
+			'amount' => 'required|numeric',
+		];
+
+		return $rules;
+	}
+
+	public function attribute() {
+
+		$rules = [
+//
 		];
 
 		return $rules;

@@ -469,14 +469,6 @@
           <div class="col-sm-12 col-md-6 col-lg-3 my-auto">
             <div class="form-check form-check-inline">
               <label class="form-check-label">
-                {!! Form::checkbox('show_brand', 1, false,
-                [ 'class' => 'form-check-input-styled', 'data-fouc', 'id' => 'show_brand']) !!}   @lang('service.show_brand')
-              </label>
-            </div>
-          </div>
-          <div class="col-sm-12 col-md-6 col-lg-3 my-auto">
-            <div class="form-check form-check-inline">
-              <label class="form-check-label">
                 {!! Form::checkbox('show_sku', 1, false,
                 [ 'class' => 'form-check-input-styled', 'data-fouc', 'id' => 'show_sku']) !!}   @lang('service.show_sku')
               </label>
@@ -548,7 +540,7 @@
           <div class="col-sm-12 col-md-6 col-lg-3 my-auto">
             <div class="form-check form-check-inline">
               <label class="form-check-label">
-                {!! Form::checkbox('show_lot', 'show_expiry', false,
+                {!! Form::checkbox('show_lot', 'show_lot', false,
                 [ 'class' => 'form-check-input-styled', 'data-fouc', 'id' => 'show_lot']) !!}    @lang('service.show_lot_number')
               </label>
             </div>
@@ -557,7 +549,7 @@
           <div class="col-sm-12 col-md-6 col-lg-3 my-auto">
             <div class="form-check form-check-inline">
               <label class="form-check-label">
-                {!! Form::checkbox('show_image', 'show_expiry', false,
+                {!! Form::checkbox('show_image', 'show_image', false,
                 [ 'class' => 'form-check-input-styled', 'data-fouc', 'id' => 'show_image']) !!}    @lang('service.show_product_image')
               </label>
             </div>

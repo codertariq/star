@@ -36,6 +36,20 @@ Route::group(['namespace' => 'Admin', 'middleware' => ['auth', 'active', 'auth',
 
 	Route::resource('invoice-layouts', 'InvoiceLayoutController');
 
+	Route::delete('/barcodes/set_default/{id}', 'BarcodeController@set_default')->name('barcodes.set_default');
+	Route::put('action/barcodes', 'BarcodeController@action')->name('role.sales-commission-agents');
+	Route::resource('barcodes', 'BarcodeController');
+
+	Route::put('action/tax-rates', 'TaxRateController@action')->name('tax-rates.action');
+	Route::resource('tax-rates', 'TaxRateController');
+
+	Route::put('action/group-taxes', 'GroupTaxController@action')->name('group-taxes.action');
+	Route::resource('group-taxes', 'GroupTaxController');
+
+	Route::resource('notification-templates', 'NotificationTemplateController')->only(['index', 'store']);
+	Route::get('notification/get-template/{transaction_id}/{template_for}', 'NotificationController@getTemplate');
+	Route::post('notification/send', 'NotificationController@send');
+
 });
 
 Route::group(['middleware' => ['auth', 'active', 'auth', 'SetSessionData', 'timezone'], 'prefix' => 'admin', 'as' => 'admin.'], function () {

@@ -44,3 +44,29 @@ Breadcrumbs::for ('invoice-layouts.create', function ($trail) {
 	$trail->push(__('page.invoice_layouts'), route('admin.invoice-layouts.index'));
 	$trail->push(__('page.new', ['attribute' => __('page.invoice_layouts')]), route('admin.invoice-layouts.create'));
 });
+
+Breadcrumbs::for ('invoice-layouts.edit', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.invoice_layouts'), route('admin.invoice-layouts.index'));
+	$trail->push(__('page.new', ['attribute' => __('page.invoice_layouts')]), route('admin.invoice-layouts.edit'));
+});
+
+Breadcrumbs::for ('barcodes.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.barcodes'), route('admin.barcodes.index'));
+});
+
+Breadcrumbs::for ('tax-rates.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.tax_rates'), route('admin.tax-rates.index'));
+});
+
+Breadcrumbs::for ('group-taxes.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.group_taxes'), route('admin.group-taxes.index'));
+});
+
+Breadcrumbs::for ('notification-templates.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.notification_templates'), route('admin.notification-templates.index'));
+});
