@@ -16,6 +16,9 @@ return [
 	'sales_commission_agents_title' => 'Sales Commission Agents Management',
 	'group_taxes_title' => 'Group Tax Management',
 	'notification_templates_title' => 'Notification Templates Management',
+	'customer_group_title' => 'Customer Group Management',
+	'unit_title' => 'Unit Management',
+	'category_title' => 'Category Management',
 
 	'home' => 'Home',
 	'user' => 'User',
@@ -29,6 +32,9 @@ return [
 	'invoice_layouts' => 'Invoice Layouts',
 	'group_taxes' => 'Group Taxes',
 	'notification_templates' => 'Notification Template',
+	'customer_group' => 'Customer Group',
+	'unit' => 'Unit',
+	'category' => 'Category',
 
 	'new' => 'New :attribute',
 

@@ -70,3 +70,23 @@ Breadcrumbs::for ('notification-templates.index', function ($trail) {
 	$trail->push(__('page.home'), route('home'));
 	$trail->push(__('page.notification_templates'), route('admin.notification-templates.index'));
 });
+
+Breadcrumbs::for ('contacts.index', function ($trail, $type) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('service.' . $type . 's'), route('admin.notification-templates.index'));
+});
+
+Breadcrumbs::for ('customer-group.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.customer_group'), route('admin.customer-group.index'));
+});
+
+Breadcrumbs::for ('units.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.unit'), route('admin.units.index'));
+});
+
+Breadcrumbs::for ('categories.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.category'), route('admin.categories.index'));
+});

@@ -146,6 +146,15 @@
 			@endauth
 			<!-- Main content -->
 			<div class="content-wrapper">
+				 <!-- Add currency related field-->
+                <input type="hidden" id="__code" value="{{session('currency')['code']}}">
+                <input type="hidden" id="__symbol" value="{{session('currency')['symbol']}}">
+                <input type="hidden" id="__thousand" value="{{session('currency')['thousand_separator']}}">
+                <input type="hidden" id="__decimal" value="{{session('currency')['decimal_separator']}}">
+                <input type="hidden" id="__symbol_placement" value="{{session('business.currency_symbol_placement')}}">
+                <input type="hidden" id="__precision" value="{{config('constants.currency_precision', 2)}}">
+                <input type="hidden" id="__quantity_precision" value="{{config('constants.quantity_precision', 2)}}">
+                <!-- End of currency related field-->
 				@auth()
 				<!-- Page header -->
 				@section('page_header')
@@ -238,6 +247,8 @@
 		<script src="{{ asset('js/layout_fixed_sidebar_custom.js') }}"></script>
 		<script src="{{ asset('js/parsley.js') }}"></script>
 		<script src="{{ asset('js/date_time_picker.js') }}"></script>
+		<script src="{{ asset('js/accounting.js') }}"></script>
+		<script src="{{ asset('js/function.js') }}"></script>
 		@if (ANIMATE)
 		<script src="{{ asset('global_assets/js/plugins/velocity/velocity.min.js') }}"></script>
 		<script src="{{ asset('global_assets/js/plugins/velocity/velocity.ui.min.js') }}"></script>

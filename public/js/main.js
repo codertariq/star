@@ -2,6 +2,21 @@ Lang.setLocale($('html').attr('lang'));
 paceOptions = {
     ajax: true,
 };
+//Set global currency to be used in the application
+__currency_symbol = $('input#__symbol').val();
+__currency_thousand_separator = $('input#__thousand').val();
+__currency_decimal_separator = $('input#__decimal').val();
+__currency_symbol_placement = $('input#__symbol_placement').val();
+if ($('input#__precision').length > 0) {
+    __currency_precision = $('input#__precision').val();
+} else {
+    __currency_precision = 2;
+}
+if ($('input#__quantity_precision').length > 0) {
+    __quantity_precision = $('input#__quantity_precision').val();
+} else {
+    __quantity_precision = 2;
+}
 Pace.start();
 $.ajaxSetup({
     headers: {
@@ -59,7 +74,6 @@ var _componentSelect2 = function() {
         dropdownAutoWidth: true,
         dropdownParent: $("#content_modal .modal-content")
     });
-
     $('.card-body .select').select2({
         // dropdownAutoWidth: true,
     });
@@ -189,7 +203,6 @@ $(document).on('click', '#set_default', function(e) {
     var url = $(this).data('url');
     var status = $(this).data('status');
     msg = Lang.get('service.make_it_default');
-    
     $('#action_menu_' + row).hide();
     $('#delete_loading_' + row).show();
     swalInit({
@@ -213,7 +226,7 @@ $(document).on('click', '#set_default', function(e) {
                     error: function(data) {
                         ajax_error(data);
                         $('#delete_loading_' + row).hide();
-                $('#action_menu_' + row).show();
+                        $('#action_menu_' + row).show();
                     }
                 });
             } else {
@@ -556,7 +569,6 @@ $(document).on('click', '.check_all', function() {
             });
     }
 });
-
 var _componentTooltipCustomColor = function() {
     $('[data-popup=tooltip]').tooltip();
 };
@@ -662,8 +674,6 @@ $('#content_modal').on('shown.bs.modal', function(e) {
         ele.focus();
     }
 });
-
-
 $(document).on('click', '.option-div-group .option-div', function() {
     $(this)
         .closest('.option-div-group')
@@ -677,7 +687,6 @@ $(document).on('click', '.option-div-group .option-div', function() {
         .prop('checked', true)
         .change();
 });
-
 $(document).on('change', 'input[type=radio][name=scheme_type]', function() {
     $('#invoice_format_settings').removeClass('hide');
     var scheme_type = $(this).val();
@@ -696,7 +705,6 @@ $(document).on('change', 'input[type=radio][name=scheme_type]', function() {
     }
     show_invoice_preview();
 });
-
 $(document).on('change', '#prefix', function() {
     show_invoice_preview();
 });
@@ -722,3 +730,11 @@ function pad_zero(str, max) {
     str = str.toString();
     return str.length < max ? pad_zero('0' + str, max) : str;
 }
+$(document).on('change', '.toggler', function() {
+    var parent_id = $(this).attr('data-toggle_id');
+    if ($(this).is(':checked')) {
+        $('#' + parent_id).removeClass('hide');
+    } else {
+        $('#' + parent_id).addClass('hide');
+    }
+});

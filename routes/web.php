@@ -50,6 +50,21 @@ Route::group(['namespace' => 'Admin', 'middleware' => ['auth', 'active', 'auth',
 	Route::get('notification/get-template/{transaction_id}/{template_for}', 'NotificationController@getTemplate');
 	Route::post('notification/send', 'NotificationController@send');
 
+	Route::get('/contacts/import', 'ContactController@getImportContacts')->name('contacts.import');
+	Route::post('/contacts/import', 'ContactController@postImportContacts');
+	Route::post('/contacts/check-contact-id', 'ContactController@checkContactId');
+	Route::get('/contacts/customers', 'ContactController@getCustomers');
+	Route::resource('contacts', 'ContactController');
+
+	Route::put('action/customer-group', 'CustomerGroupController@action')->name('customer-group.action');
+	Route::resource('customer-group', 'CustomerGroupController');
+
+	Route::put('action/units', 'UnitController@action')->name('units.action');
+	Route::resource('units', 'UnitController');
+
+	Route::put('action/categories', 'CategoryController@action')->name('categories.action');
+	Route::resource('categories', 'CategoryController');
+
 });
 
 Route::group(['middleware' => ['auth', 'active', 'auth', 'SetSessionData', 'timezone'], 'prefix' => 'admin', 'as' => 'admin.'], function () {

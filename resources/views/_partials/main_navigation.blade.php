@@ -10,6 +10,88 @@
 			</a>
 		</li>
 		<!-- /main -->
+		<!-- Application Panel -->
+		@php
+		$user_page = ['admin.contacts.index', 'admin.customer-group.index'];
+		@endphp
+		@if(auth()->user()->can('supplier.view') || auth()->user()->can('user.create') || auth()->user()->can('customer.view'))
+		<li class="nav-item-header"><div class="text-uppercase font-size-xs line-height-xs">Application Panel</div> <i class="icon-menu" title="Main"></i></li>
+		<li class="nav-item nav-item-submenu {{ nav_item_open($user_page, request()->route()->getName()) }}">
+			<a href="#" class="nav-link"><i class="icon-vcard"></i> <span>Contact Mangement</span></a>
+			<ul class="nav nav-group-sub" data-submenu-title="Contact Mangement" {!!nav_item_open($user_page, request()->route()->getName(), 'style="display: block; "') !!}>
+				@can('supplier.view')
+				<li class="nav-item">
+					<a href="{{ route('admin.contacts.index', ['type' => 'supplier']) }}" class="nav-link {{ request()->input('type') == 'supplier' ? 'active' : ''  }}">
+						<i class="icon-crown"></i>
+						<span>@lang('report.supplier')</span>
+					</a>
+				</li>
+				@endcan
+				@can('customer.view')
+				<li class="nav-item">
+					<a href="{{ route('admin.contacts.index', ['type' => 'customer']) }}" class="nav-link {{ request()->input('type') == 'customer' ? 'active' : ''  }}">
+						<i class="icon-trophy4"></i>
+						<span>@lang('report.customer')</span>
+					</a>
+				</li>
+				@endcan
+				@can( 'customer.view' )
+				<li class="nav-item">
+					<a href="{{ route('admin.customer-group.index') }}" class="nav-link {{ active_link('admin.customer-group.index') }}">
+						<i class="icon-collaboration"></i>
+						<span>@lang('service.customer_groups')</span>
+					</a>
+				</li>
+				@endcan
+				@can( 'user.view' )
+				<li class="nav-item">
+					<a href="{{ route('admin.contacts.import') }}" class="nav-link {{ active_link('admin.contacts.import') }}">
+						<i class="icon-file-upload"></i>
+						<span> @lang('service.import_contacts')</span>
+					</a>
+				</li>
+				@endcan
+			</ul>
+		</li>
+		<!-- User Panel -->
+		@endif
+		<!-- Application Panel -->
+		@php
+		$user_page = ['admin.units.index', 'admin.categories.index'];
+		@endphp
+		 @if(auth()->user()->can('product.view') ||
+        auth()->user()->can('product.create') ||
+        auth()->user()->can('brand.view') ||
+        auth()->user()->can('unit.view') ||
+        auth()->user()->can('category.view') ||
+        auth()->user()->can('brand.create') ||
+        auth()->user()->can('unit.create') ||
+        auth()->user()->can('category.create') )
+		<li class="nav-item nav-item-submenu {{ nav_item_open($user_page, request()->route()->getName()) }}">
+			<a href="#" class="nav-link"><i class="icon-vcard"></i> <span>Product Mangement</span></a>
+			<ul class="nav nav-group-sub" data-submenu-title="Product Mangement" {!!nav_item_open($user_page, request()->route()->getName(), 'style="display: block; "') !!}>
+				@can('unit.view')
+				<li class="nav-item">
+					<a href="{{ route('admin.units.index') }}" class="nav-link {{ active_link('admin.units.index') }}">
+						<i class="fa fa-balance-scale"></i>
+						<span>@lang('unit.units')</span>
+					</a>
+				</li>
+				@endcan
+				@if(auth()->user()->can('category.view') || auth()->user()->can('category.create'))
+				<li class="nav-item">
+					<a href="{{ route('admin.categories.index') }}" class="nav-link {{ active_link('admin.categories.index') }}">
+						<i class="fa fa-tags"></i>
+						<span>@lang('category.categories')</span>
+					</a>
+				</li>
+				@endif
+			</ul>
+		</li>
+		<!-- User Panel -->
+		@endif
+		<!-- User Panel -->
+		<!-- User Panel -->
 		<!-- User Panel -->
 		@php
 		$user_page = ['admin.user.index', 'admin.role.index', 'admin.sales-commission-agents.index'];
