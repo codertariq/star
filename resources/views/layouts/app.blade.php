@@ -146,6 +146,7 @@
 			@endauth
 			<!-- Main content -->
 			<div class="content-wrapper">
+				@auth()
 				 <!-- Add currency related field-->
                 <input type="hidden" id="__code" value="{{session('currency')['code']}}">
                 <input type="hidden" id="__symbol" value="{{session('currency')['symbol']}}">
@@ -155,6 +156,7 @@
                 <input type="hidden" id="__precision" value="{{config('constants.currency_precision', 2)}}">
                 <input type="hidden" id="__quantity_precision" value="{{config('constants.quantity_precision', 2)}}">
                 <!-- End of currency related field-->
+                @endauth
 				@auth()
 				<!-- Page header -->
 				@section('page_header')

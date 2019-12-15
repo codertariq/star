@@ -2,7 +2,7 @@
 
 Auth::routes();
 
-Route::get('home', 'HomeController@index')->name('home');
+Route::get('home', 'HomeController@index')->name('home')->middleware(['active', 'auth', 'SetSessionData', 'timezone']);
 
 Route::get('/', function () {
 	return view('welcome');
@@ -64,6 +64,29 @@ Route::group(['namespace' => 'Admin', 'middleware' => ['auth', 'active', 'auth',
 
 	Route::put('action/categories', 'CategoryController@action')->name('categories.action');
 	Route::resource('categories', 'CategoryController');
+
+	Route::put('action/brands', 'BrandController@action')->name('brands.action');
+	Route::resource('brands', 'BrandController');
+
+	Route::put('action/variation-templates', 'VariationTemplateController@action')->name('variation-templates.action');
+	Route::resource('variation-templates', 'VariationTemplateController');
+
+	Route::put('action/models', 'ModelController@action')->name('models.action');
+	Route::resource('models', 'ModelController');
+
+	Route::put('action/selling-price-group', 'SellingPriceGroupController@action')->name('selling-price-group.action');
+	Route::resource('selling-price-group', 'SellingPriceGroupController');
+
+	Route::post('/products/get_sub_categories', 'ProductController@getSubCategories');
+	Route::post('/products/product_form_part', 'ProductController@getProductVariationFormPart');
+	Route::post('/products/get_product_variation_row', 'ProductController@getProductVariationRow');
+	Route::post('/products/get_variation_template', 'ProductController@getVariationTemplate');
+	Route::get('/products/get_variation_value_row', 'ProductController@getVariationValueRow');
+	Route::post('/products/check_product_sku', 'ProductController@checkProductSku');
+	Route::get('/products/quick_add', 'ProductController@quickAdd');
+	Route::post('/products/save_quick_product', 'ProductController@saveQuickProduct');
+
+	Route::resource('products', 'ProductController');
 
 });
 

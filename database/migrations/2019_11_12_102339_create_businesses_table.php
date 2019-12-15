@@ -52,6 +52,7 @@ class CreateBusinessesTable extends Migration {
 			$table->boolean('enable_group')->default(true);
 			$table->boolean('enable_brand')->default(true);
 			$table->boolean('enable_category')->default(true);
+			$table->boolean('enable_sub_category')->default(true);
 			$table->boolean('enable_model')->default(true);
 			$table->boolean('enable_lot_number')->default(false);
 			$table->boolean('enable_price_tax')->default(true);

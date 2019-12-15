@@ -319,7 +319,7 @@ class BusinessController extends Controller {
 
 		$checkboxes = ['enable_editing_product_from_purchase', 'enable_inline_tax',
 			'enable_brand', 'enable_category', 'enable_model', 'enable_price_tax', 'enable_purchase_status', 'profit_on_fixed',
-			'enable_lot_number', 'enable_racks', 'enable_row', 'enable_position'];
+			'enable_lot_number', 'enable_racks', 'enable_row', 'enable_position', 'enable_sub_category'];
 		foreach ($checkboxes as $value) {
 			$business_details[$value] = !empty($request->input($value)) && $request->input($value) == 1 ? 1 : 0;
 		}

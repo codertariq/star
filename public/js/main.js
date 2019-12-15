@@ -738,3 +738,169 @@ $(document).on('change', '.toggler', function() {
         $('#' + parent_id).addClass('hide');
     }
 });
+
+if ($('.product_form').length) {
+    show_product_type_form();
+}
+$('#type').change(function() {
+    show_product_type_form();
+});
+
+function show_product_type_form() {
+    var product_type = 'single';
+    if ($('#type').val() === 'variable') {
+        product_type = 'variable';
+    }
+    var action = $('#type').attr('data-action');
+    var product_id = $('#type').attr('data-product_id');
+    $.ajax({
+        method: 'POST',
+        url: '/admin/products/product_form_part',
+        dataType: 'html',
+        data: {
+            type: product_type,
+            product_id: product_id,
+            action: action
+        },
+        success: function(result) {
+            if (result) {
+                $('#product_form_part').html(result);
+                toggle_dsp_input();
+                _componentSelect2();
+                _componentTooltipCustomColor();
+            }
+        },
+    });
+}
+
+function toggle_dsp_input() {
+    var tax_type = $('#tax_type').val();
+    if (tax_type == 'inclusive') {
+        $('.dsp_label').each(function() {
+            $(this).text(Lang.get('product.inc_of_tax'));
+        });
+        $('#single_dsp').addClass('hide');
+        $('#single_dsp_inc_tax').removeClass('hide');
+        $('.add-product-price-table')
+            .find('.variable_dsp_inc_tax')
+            .each(function() {
+                $(this).removeClass('hide');
+            });
+        $('.add-product-price-table')
+            .find('.variable_dsp')
+            .each(function() {
+                $(this).addClass('hide');
+            });
+    } else if (tax_type == 'exclusive') {
+        $('.dsp_label').each(function() {
+            $(this).text(Lang.get('product.exc_of_tax'));
+        });
+        $('#single_dsp').removeClass('hide');
+        $('#single_dsp_inc_tax').addClass('hide');
+        $('.add-product-price-table')
+            .find('.variable_dsp_inc_tax')
+            .each(function() {
+                $(this).addClass('hide');
+            });
+        $('.add-product-price-table')
+            .find('.variable_dsp')
+            .each(function() {
+                $(this).removeClass('hide');
+            });
+    }
+}
+
+function get_product_details(rowData) {
+    var div = $('<div/>')
+        .addClass('loading')
+        .text('Loading...');
+    $.ajax({
+        url: '/admin/products/' + rowData.id,
+        dataType: 'html',
+        success: function(data) {
+            div.html(data).removeClass('loading');
+        },
+    });
+    return div;
+}
+
+
+$(document).on('click', '#add_variation', function() {
+    var row_index = $('#variation_counter').val();
+    var action = $(this).attr('data-action');
+    $.ajax({
+        method: 'POST',
+        url: '/admin/products/get_product_variation_row',
+        data: {
+            row_index: row_index,
+            action: action
+        },
+        dataType: 'html',
+        success: function(result) {
+            if (result) {
+                $('#product_variation_form_part  > tbody').append(result);
+                $('#variation_counter').val(parseInt(row_index) + 1);
+                toggle_dsp_input();
+            }
+        },
+    });
+});
+
+function __read_number(input_element, use_page_currency = false) {
+    return __number_uf(input_element.val(), use_page_currency);
+}
+
+function __number_uf(input, use_page_currency = false) {
+    if (use_page_currency && __currency_decimal_separator) {
+        var decimal = __p_currency_decimal_separator;
+    } else {
+        var decimal = __currency_decimal_separator;
+    }
+
+    return accounting.unformat(input, decimal);
+}
+
+//Add specified percentage to the input amount.
+function __add_percent(amount, percentage = 0) {
+    var amount = parseFloat(amount);
+    var percentage = isNaN(percentage) ? 0 : parseFloat(percentage);
+
+    return amount + (percentage / 100) * amount;
+}
+
+
+//Write input by converting to formatted number
+function __write_number(
+    input_element,
+    value,
+    use_page_currency = false,
+    precision = __currency_precision
+) {
+    if(input_element.hasClass('input_quantity')) {
+        precision = __quantity_precision;
+    }
+
+    input_element.val(__number_f(value, false, use_page_currency, precision));
+}
+
+//Alias of currency format, formats number
+function __number_f(
+    input,
+    show_symbol = false,
+    use_page_currency = false,
+    precision = __currency_precision
+) {
+    return __currency_trans_from_en(input, show_symbol, use_page_currency, precision);
+}
+
+//Returns the principle amount for the calculated amount and percentage
+function __get_principle(amount, percentage = 0, minus = false) {
+    var amount = parseFloat(amount);
+    var percentage = isNaN(percentage) ? 0 : parseFloat(percentage);
+
+    if (minus) {
+        return (100 * amount) / (100 - percentage);
+    } else {
+        return (100 * amount) / (100 + percentage);
+    }
+}

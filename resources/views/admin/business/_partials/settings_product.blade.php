@@ -62,13 +62,21 @@
     <div class="col-sm-4 my-auto enable_sub_category">
         <div class="form-check form-check-inline">
             <label class="form-check-label">
-                {!! Form::checkbox('enable_model', 1, $business->enable_model,
+                {!! Form::checkbox('enable_sub_category', 1, $business->enable_sub_category,
                 [ 'class' => 'form-check-input-styled', 'data-fouc', 'id' => 'enable_sub_category']) !!}  {{ __( 'service.enable_sub_category' ) }}
             </label>
         </div>
     </div>
 </div>
 <div class="row">
+    <div class="col-sm-4 my-auto ">
+        <div class="form-check form-check-inline">
+            <label class="form-check-label">
+                {!! Form::checkbox('enable_model', 1, $business->enable_model,
+                [ 'class' => 'form-check-input-styled', 'data-fouc', 'id' => 'enable_model']) !!}  {{ __( 'service.enable_model' ) }}
+            </label>
+        </div>
+    </div>
     <div class="col-sm-4 my-auto">
         <div class="form-check form-check-inline">
             <label class="form-check-label">
@@ -81,13 +89,15 @@
         <div class="form-group">
             {!! Form::label('default_unit', __('service.default_unit') . ':') !!}
             <div class="form-group-feedback form-group-feedback-right">
-                {!! Form::select('default_unit', $units_dropdown, $business->default_unit, ['class' => 'form-control select', 'style' => 'width: 100%;' ]); !!}
+                {!! Form::select('default_unit', $units_dropdown, $business->default_unit, ['class' => 'form-control select', 'style' => 'width: 100%;', 'data-placeholder' => 'Please Select' ]); !!}
                 <div class="form-control-feedback form-control-feedback-sm">
                     <i class="fa fa-balance-scale"></i>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div class="row">
     <div class="col-sm-4 my-auto">
         <div class="form-check form-check-inline">
             <label class="form-check-label">
@@ -96,8 +106,6 @@
             </label>
         </div>
     </div>
-</div>
-<div class="row">
     <div class="col-sm-4 my-auto">
         <div class="form-check form-check-inline">
             <label class="form-check-label">

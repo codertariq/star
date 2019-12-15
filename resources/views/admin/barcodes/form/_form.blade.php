@@ -156,9 +156,6 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-12">
-      <button type="submit" class="btn btn-primary pull-right">@lang('messages.save')</button>
-    </div>
   </div>
   <div class="form-group row text-center">
     <div class="col-md-12">

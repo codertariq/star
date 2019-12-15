@@ -57,7 +57,7 @@
 		@endif
 		<!-- Application Panel -->
 		@php
-		$user_page = ['admin.units.index', 'admin.categories.index'];
+		$user_page = ['admin.units.index', 'admin.categories.index', 'admin.brands.index', 'admin.variation-templates.index', 'admin.models.index', 'admin.selling-price-group.index', 'admin.products.create'];
 		@endphp
 		 @if(auth()->user()->can('product.view') ||
         auth()->user()->can('product.create') ||
@@ -68,8 +68,40 @@
         auth()->user()->can('unit.create') ||
         auth()->user()->can('category.create') )
 		<li class="nav-item nav-item-submenu {{ nav_item_open($user_page, request()->route()->getName()) }}">
-			<a href="#" class="nav-link"><i class="icon-vcard"></i> <span>Product Mangement</span></a>
+			<a href="#" class="nav-link"><i class="icon-dice"></i> <span>Product Mangement</span></a>
 			<ul class="nav nav-group-sub" data-submenu-title="Product Mangement" {!!nav_item_open($user_page, request()->route()->getName(), 'style="display: block; "') !!}>
+				@if(auth()->user()->can('product.create') or auth()->user()->can('product.view'))
+				<li class="nav-item">
+					<a href="{{ route('admin.products.create') }}" class="nav-link {{ active_link('admin.products.create') }}">
+						<i class="icon-plus-circle2"></i>
+						<span>@lang('product.add_new_product')</span>
+					</a>
+				</li>
+				@endif
+				@if(auth()->user()->can('product.create'))
+				<li class="nav-item">
+					<a href="{{ route('admin.selling-price-group.index') }}" class="nav-link {{ active_link('admin.selling-price-group.index') }}">
+						<i class="icon-lan2"></i>
+						<span>@lang('service.selling_price_group')</span>
+					</a>
+				</li>
+				@endif
+				@can('model.view')
+				<li class="nav-item">
+					<a href="{{ route('admin.models.index') }}" class="nav-link {{ active_link('admin.models.index') }}">
+						<i class="icon-stamp"></i>
+						<span>@lang('page.model')</span>
+					</a>
+				</li>
+				@endcan
+				@can('product.view')
+				<li class="nav-item">
+					<a href="{{ route('admin.variation-templates.index') }}" class="nav-link {{ active_link('admin.variation-templates.index') }}">
+						<i class="icon-color-sampler"></i>
+						<span>@lang('product.variations')</span>
+					</a>
+				</li>
+				@endcan
 				@can('unit.view')
 				<li class="nav-item">
 					<a href="{{ route('admin.units.index') }}" class="nav-link {{ active_link('admin.units.index') }}">
@@ -83,6 +115,14 @@
 					<a href="{{ route('admin.categories.index') }}" class="nav-link {{ active_link('admin.categories.index') }}">
 						<i class="fa fa-tags"></i>
 						<span>@lang('category.categories')</span>
+					</a>
+				</li>
+				@endif
+				@if(auth()->user()->can('brand.view') || auth()->user()->can('brand.create'))
+				<li class="nav-item">
+					<a href="{{ route('admin.brands.index') }}" class="nav-link {{ active_link('admin.brands.index') }}">
+						<i class="icon-image5"></i>
+						<span>@lang('brand.brands')</span>
 					</a>
 				</li>
 				@endif

@@ -90,3 +90,29 @@ Breadcrumbs::for ('categories.index', function ($trail) {
 	$trail->push(__('page.home'), route('home'));
 	$trail->push(__('page.category'), route('admin.categories.index'));
 });
+
+Breadcrumbs::for ('brands.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.brand'), route('admin.brands.index'));
+});
+
+Breadcrumbs::for ('variation-templates.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.variation_template'), route('admin.variation-templates.index'));
+});
+
+Breadcrumbs::for ('models.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.model'), route('admin.models.index'));
+});
+
+Breadcrumbs::for ('selling-price-group.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.selling_price_group'), route('admin.selling-price-group.index'));
+});
+
+Breadcrumbs::for ('products.create', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.product'), route('admin.products.index'));
+	$trail->push(__('product.add_new_product'), route('admin.products.create'));
+});

@@ -19,6 +19,11 @@ return [
 	'customer_group_title' => 'Customer Group Management',
 	'unit_title' => 'Unit Management',
 	'category_title' => 'Category Management',
+	'brand_title' => 'Brand Management',
+	'variation_template_title' => 'Variation Template Management',
+	'model_title' => 'Model Management',
+	'selling_price_group_title' => 'Selling Price Group Management',
+	'product_title' => 'Product Management',
 
 	'home' => 'Home',
 	'user' => 'User',
@@ -35,6 +40,12 @@ return [
 	'customer_group' => 'Customer Group',
 	'unit' => 'Unit',
 	'category' => 'Category',
+	'brand' => 'Brand',
+	'variation_template' => 'Variation Template',
+	'variation_template_value' => 'Variation Template Value',
+	'model' => 'Model',
+	'selling_price_group' => 'Selling Price Group',
+	'product' => 'Product',
 
 	'new' => 'New :attribute',
 

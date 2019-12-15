@@ -18,7 +18,7 @@ return [
 	'add_product_for_labels' => 'Add products to generate Labels',
 	'product_type' => 'Product Type',
 	'category' => 'Category',
-	'sub_category' => 'Model',
+	'sub_category' => 'Sub Category',
 	'unit' => 'Unit',
 	'brand' => 'Brand',
 	'tax' => 'Tax',
