@@ -15,29 +15,39 @@ var FormHandle = function() {
 
     // Basic Datatable examples
     var _componentValidation = function(form) {
-        form.parsley({
+       form.parsley({
             'excluded': ':disabled'
         }).on('field:validated', function() {
             const ok = $('.parsley-error').length === 0;
             $('.bs-callout-info').toggleClass('hidden', !ok);
             $('.bs-callout-warning').toggleClass('hidden', ok);
         });
-
     };
 
     // Select2 for length menu styling
     var _componentSubmit = function(form) {
+
         form.on('submit', function(e) {
             e.preventDefault();
-            console.log(form);
+
             $('.parsley-required').remove();
             const submit = $('#submit');
             show_submit_loading(submit);
             const submit_val = submit.val();
             const submit_url = form.attr('action');
             //Start Ajax
+            var quick_add = false;
+            if ($('#quick_add').length > 0) {
+                quick_add = $('#quick_add').val();
+                console.log(quick_add)
+            }
             const formData = new FormData(form[0]);
             formData.append('submit', submit_val);
+            if ($('#product_description').length > 0) {
+               product_description =  CKEDITOR.instances['product_description'].getData()
+                formData.append('product_description', product_description);
+            }
+
             $.ajax({
                 url: submit_url,
                 type: 'POST',
@@ -48,6 +58,13 @@ var FormHandle = function() {
                 dataType: 'JSON',
                 success: function(data) {
                     ajax_success(data, form);
+                    if (quick_add) {
+                        console.log(quick_add)
+                        var newOption = new Option(data.model.name, data.model.id, true, true);
+                        $('#'+quick_add)
+                            .append(newOption)
+                            .trigger('change');
+                    }
                     hide_submit_loading(form);
                 },
                 error: function(data) {
@@ -66,6 +83,7 @@ var FormHandle = function() {
     return {
         init: function(form_id = '#content_form') {
             let form = $(form_id);
+            // console.log(form);
             if (form.length <= 0) {
                 p_notify(Lang.get('service.not_loaded', {
                     attribute: Lang.get('service.content_management_form')

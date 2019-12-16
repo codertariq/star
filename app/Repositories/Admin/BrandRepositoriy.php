@@ -96,8 +96,6 @@ class BrandRepositoriy extends Repository {
 			->editColumn('name', function ($model) {
 				return '<strong>' . $model->name . '</strong>';
 			})
-
-			->removeColumn('id')
 			->addColumn('action', function ($model) {
 
 				$action['route'] = $this->route;

@@ -7,10 +7,10 @@
  * ---------------------------------------------------------------------------- */
 // Setup module
 // ------------------------------
-var tariq = '';
+
 var DatatableResponsive = function() {
     // Basic Datatable examples
-    var _componentDatatableResponsive = function() {
+   var _componentDatatableResponsive = function() {
         if (!$().DataTable) {
             p_notify(Lang.get('service.not_loaded', {
                 attribute: 'datatable.min.js'
@@ -52,7 +52,7 @@ var DatatableResponsive = function() {
                 className: 'btn btn-danger',
                 text: 'Delete',
                 action: function(e, dt, node, config) {
-                    datatableSelectedRowsAction(dt, 'action/brands', action = 'delete', msg = Lang.get('service.delete_message'));
+                    datatableSelectedRowsAction(dt, 'action/products', action = 'delete', msg = Lang.get('service.delete_message'));
                 }
             }],
             columns: [{
@@ -60,16 +60,31 @@ var DatatableResponsive = function() {
             }, {
                 data: 'DT_RowIndex',
                 name: 'id'
-            }, {
-                data: 'name'
             },{
-                data: 'description'
+                data: 'product'
+            },{
+                data: 'price'
+            },{
+                data: 'current_stock'
+            },{
+                data: 'type'
+            },{
+                data: 'category'
+            },{
+                data: 'model'
+            },{
+                data: 'brand'
+            },{
+                data: 'tax'
+            },{
+                data: 'sku'
             }, {
                 data: 'action'
             }]
         });
         
     };
+
     var _componentRemoteModalLoad = function() {
             $(document).on('click', '#content_managment', function(e) {
                 e.preventDefault();
@@ -101,18 +116,14 @@ var DatatableResponsive = function() {
                         ajax_error(data);
                     });
             });
-        }
-        //
-        // Return objects assigned to module
-        //
+        };
     return {
-        init: function() {
+        init: function() {            
             if ($('.content_management_datatable').length > 0) {
                 _componentDatatableResponsive();
                 _componentDataTableSelect2();
             }
             _componentRemoteModalLoad();
-            checkLocationId();
         }
     }
 }();

@@ -4,8 +4,8 @@
 	</div>
 	<div class="col-md-12">
 		<div class="table-responsive">
-			<table class="table bg-gray">
-				<tr class="bg-green">
+			<table class="table table-sm">
+				<tr class="bg-success">
 					<th>@lang('product.variations')</th>
 					<th>@lang('product.sku')</th>
 					@can('view_purchase_price')

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Business;
+use App\Models\ModelTemplate;
 use App\Models\ProductVariation;
+use App\Models\SellingPriceGroup;
 use App\Models\VariationTemplate;
 use App\Repositories\Admin\ProductRepositoriy;
 use Illuminate\Http\Request;
@@ -51,15 +53,28 @@ class ProductController extends Controller {
 	 * Store a newly created resource in storage.
 	 *
 	 * @param  \Illuminate\Http\Request  $request
-	 * @return \Illuminate\Http\Response
+	 * @return \Illuminate\Http\JsonResponse
 	 */
 	public function store(ProductRequest $request) {
+
 		if (!auth()->user()->can('product.create')) {
 			abort(403, 'Unauthorized action.');
 		}
 
-		$this->repo->create($this->request->all());
-		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.product')])]);
+		$product = $this->repo->create($this->request->all());
+		$goto = '';
+		if ($request->input('submit_type') == 'submit_n_add_opening_stock') {
+			$goto = route('admin.opening-stock.create', $product->id);
+		} elseif ($request->input('submit_type') == 'submit_n_add_selling_prices') {
+			$goto = route('admin.add-selling-prices.create', $product->id);
+		} elseif ($request->input('submit_type') == 'save_n_add_another') {
+			$goto = route('admin.products.create', $product->id);
+		} else {
+			$goto = route('admin.products.index');
+		}
+
+		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.product')]), 'goto' => $goto]);
+
 	}
 
 	/**
@@ -69,14 +84,59 @@ class ProductController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function show($id) {
-		abort(404);
-		// if (!auth()->user()->can('product.view')) {
-		// 	abort(403, 'Unauthorized action.');
-		// }
+		if (!auth()->user()->can('product.view')) {
+			abort(403, 'Unauthorized action.');
+		}
 
-		// // $model = $this->repo->getQuery()->with(['contactAccess'])->findOrFail($id);
-		// $model = $this->repo->findOrFail($id);
-		// return view('admin.product.show', compact('model'));
+		$business_id = request()->session()->get('user.business_id');
+		$details = $this->repo->productUtil->getRackDetails($business_id, $id, true);
+
+		return view('admin.product.show')->with(compact('details'));
+	}
+
+	/**
+	 * Display the specified resource.
+	 *
+	 * @param  \App\Product  $product
+	 * @return \Illuminate\Http\Response
+	 */
+	public function view($id) {
+		if (!auth()->user()->can('product.view')) {
+			abort(403, 'Unauthorized action.');
+		}
+
+		$business_id = request()->session()->get('user.business_id');
+
+		$product = $this->repo->model->where('business_id', $business_id)
+			->where('id', $id)
+			->with(['brand', 'unit', 'category', 'sub_category', 'product_tax', 'variations', 'variations.product_variation', 'variations.group_prices'])
+			->first();
+
+		$price_groups = SellingPriceGroup::where('business_id', $business_id)->pluck('name', 'id');
+
+		$allowed_group_prices = [];
+		foreach ($price_groups as $key => $value) {
+			if (auth()->user()->can('selling_price_group.' . $key)) {
+				$allowed_group_prices[$key] = $value;
+			}
+		}
+
+		$group_price_details = [];
+
+		foreach ($product->variations as $variation) {
+			foreach ($variation->group_prices as $group_price) {
+				$group_price_details[$variation->id][$group_price->price_group_id] = $group_price->price_inc_tax;
+			}
+		}
+
+		$rack_details = $this->repo->productUtil->getRackDetails($business_id, $id, true);
+
+		return view('admin.product.view-modal')->with(compact(
+			'product',
+			'rack_details',
+			'allowed_group_prices',
+			'group_price_details'
+		));
 	}
 
 	/**
@@ -92,7 +152,7 @@ class ProductController extends Controller {
 
 		$model = $this->repo->findOrFail($id);
 		$pre_requisite = $this->repo->preRequisite($id);
-		return view('admin.product.edit', compact('model'));
+		return view('admin.product.edit', $pre_requisite, compact('model'));
 	}
 
 	/**
@@ -260,5 +320,34 @@ class ProductController extends Controller {
 
 		return view('admin.product.partials.product_variation_template')
 			->with(compact('template', 'row_index', 'profit_percent'));
+	}
+	/**
+	 * Get subcategories list for a category.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function getSubModels() {
+		$business_id = $this->request->session()->get('user.business_id');
+		$models = ModelTemplate::where('business_id', $business_id);
+		if ($this->request->cat_id) {
+			$category_id = $this->request->cat_id;
+			$models->where('category_id', $category_id);
+		}
+		if ($this->request->brand_id) {
+			$brand_id = $this->request->brand_id;
+			$models->where('brand_id', $brand_id);
+		}
+
+		$models = $models->get();
+
+		$html = '<option value="">None</option>';
+		if (!empty($models)) {
+			foreach ($models as $model) {
+				$html .= '<option value="' . $model->id . '">' . $model->name . '</option>';
+			}
+		}
+		echo $html;
+		exit;
 	}
 }

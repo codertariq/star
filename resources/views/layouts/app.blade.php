@@ -251,11 +251,13 @@
 		<script src="{{ asset('js/date_time_picker.js') }}"></script>
 		<script src="{{ asset('js/accounting.js') }}"></script>
 		<script src="{{ asset('js/function.js') }}"></script>
+		<script src="{{ asset('js/printthis.js') }}"></script>
 		@if (ANIMATE)
 		<script src="{{ asset('global_assets/js/plugins/velocity/velocity.min.js') }}"></script>
 		<script src="{{ asset('global_assets/js/plugins/velocity/velocity.ui.min.js') }}"></script>
 		<script src="{{ asset('global_assets/js/plugins/ui/prism.min.js') }}"></script>
 		<script src="{{ asset('js/animations.js') }}"></script>
+
 		@endif
 		<!-- /core JS files -->
 		@if (gv($data['attribute'], 'list'))

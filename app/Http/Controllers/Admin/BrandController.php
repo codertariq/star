@@ -40,8 +40,10 @@ class BrandController extends Controller {
 		if (!auth()->user()->can('brand.create')) {
 			abort(403, 'Unauthorized action.');
 		}
+
+		$quick_add = $this->request->quick_add ? 1 : 0;
 		// $pre_requisite = $this->repo->preRequisite();
-		return view('admin.brand.create');
+		return view('admin.brand.create', compact('quick_add'));
 	}
 
 	/**
@@ -55,8 +57,8 @@ class BrandController extends Controller {
 			abort(403, 'Unauthorized action.');
 		}
 
-		$this->repo->create($this->request->all());
-		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.brand')])]);
+		$model = $this->repo->create($this->request->all());
+		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.brand')]), 'model' => $model]);
 	}
 
 	/**

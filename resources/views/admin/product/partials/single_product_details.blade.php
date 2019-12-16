@@ -2,7 +2,7 @@
 <div class="row">
 	<div class="col-md-12">
 		<div class="table-responsive">
-			<table class="table bg-gray">
+			<table class="table table-sm">
 				<tr class="bg-green">
 					@can('view_purchase_price')
 						<th>@lang('product.default_purchase_price') (@lang('product.exc_of_tax'))</th>

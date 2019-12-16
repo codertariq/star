@@ -2,23 +2,23 @@
 
 namespace App\Utils;
 
-use App\Business;
+use App\Models\Business;
 
-use App\BusinessLocation;
-use App\Discount;
-use App\Product;
-use App\ProductRack;
-use App\ProductVariation;
-use App\PurchaseLine;
-use App\TaxRate;
-use App\Transaction;
-use App\TransactionSellLinesPurchaseLines;
-use App\Unit;
-use App\Variation;
-use App\VariationGroupPrice;
-use App\VariationLocationDetails;
-use App\VariationTemplate;
-use App\VariationValueTemplate;
+use App\Models\BusinessLocation;
+use App\Models\Discount;
+use App\Models\Product;
+use App\Models\ProductRack;
+use App\Models\ProductVariation;
+use App\Models\PurchaseLine;
+use App\Models\TaxRate;
+use App\Models\Transaction;
+use App\Models\TransactionSellLinesPurchaseLines;
+use App\Models\Unit;
+use App\Models\Variation;
+use App\Models\VariationGroupPrice;
+use App\Models\VariationLocationDetails;
+use App\Models\VariationTemplate;
+use App\Models\VariationValueTemplate;
 use Illuminate\Support\Facades\DB;
 
 class ProductUtil extends Util
@@ -47,7 +47,7 @@ class ProductUtil extends Util
                                     'is_dummy' => 1
                                 ];
         $product_variation = $product->product_variations()->create($product_variation_data);
-                
+
         //create variations
         $variation_data = [
                 'name' => 'DUMMY',
@@ -110,7 +110,7 @@ class ProductUtil extends Util
                                     'variation_template_id' => $variation_template_id
                                 ];
             $product_variation = ProductVariation::create($product_variation_data);
-            
+
             //create variations
             if (!empty($value['variations'])) {
                 $variation_data = [];
@@ -118,7 +118,7 @@ class ProductUtil extends Util
                 $c = Variation::withTrashed()
                         ->where('product_id', $product->id)
                         ->count() + 1;
-                
+
                 foreach ($value['variations'] as $k => $v) {
                     $sub_sku = empty($v['sub_sku'])? $this->generateSubSku($product->sku, $c, $product->barcode_type) :$v['sub_sku'];
                     $variation_value_id = !empty($v['variation_value_id']) ? $v['variation_value_id'] : null;
@@ -236,7 +236,7 @@ class ProductUtil extends Util
                                 'variation_template_id' => $product_variation->variation_template_id
                             ]);
                         }
-                        
+
                         $variation_value_id = $variation_value->id;
                     }
 
@@ -283,7 +283,7 @@ class ProductUtil extends Util
         } else {
             $qty_difference = $new_quantity - $old_quantity;
         }
-        
+
 
         $product = Product::find($product_id);
 
@@ -292,7 +292,7 @@ class ProductUtil extends Util
             $variation = Variation::where('id', $variation_id)
                             ->where('product_id', $product_id)
                             ->first();
-            
+
             //Add quantity in VariationLocationDetails
             $variation_location_d = VariationLocationDetails
                                     ::where('variation_id', $variation->id)
@@ -317,7 +317,7 @@ class ProductUtil extends Util
             // Product::where('id', $product_id)
             //     ->increment('total_qty_available', $qty_difference);
         }
-        
+
         return true;
     }
 
@@ -346,7 +346,7 @@ class ProductUtil extends Util
                 ->where('location_id', $location_id)
                 ->decrement('qty_available', $qty_difference);
 
-            
+
             // Variation::where('id', $variation_id)
             //     ->where('product_id', $product_id)
             //     ->decrement('qty_available', $qty_difference);
@@ -389,7 +389,7 @@ class ProductUtil extends Util
                     ->orWhere('vld.qty_available', '>', 0);
             });
         }
-        
+
         if (!empty($location_id)) {
             //Check for enable stock, if enabled check for location id.
             $query->where(function ($query) use ($location_id) {
@@ -397,9 +397,9 @@ class ProductUtil extends Util
                             ->orWhere('vld.location_id', $location_id);
             });
         }
-        
+
         $products = $query->select(
-            DB::raw("IF(pv.is_dummy = 0, CONCAT(p.name, 
+            DB::raw("IF(pv.is_dummy = 0, CONCAT(p.name,
                     ' (', pv.name, ':',variations.name, ')'), p.name) AS product_name"),
             'p.id as product_id',
             'p.brand_id',
@@ -421,7 +421,7 @@ class ProductUtil extends Util
             'units.id as unit_id',
             'units.allow_decimal as unit_allow_decimal',
             'brands.name as brand',
-            DB::raw("(SELECT purchase_price_inc_tax FROM purchase_lines WHERE 
+            DB::raw("(SELECT purchase_price_inc_tax FROM purchase_lines WHERE
                         variation_id=variations.id ORDER BY id DESC LIMIT 1) as last_purchased_price")
         )
                 ->first();
@@ -476,10 +476,10 @@ class ProductUtil extends Util
                 $output['tax'] = ($tax_details->amount/100) * ($output['total_before_tax'] - $output['discount']);
             }
         }
-        
+
         //Calculate total
         $output['final_total'] = $output['total_before_tax'] + $output['tax'] - $output['discount'];
-        
+
         return $output;
     }
 
@@ -671,7 +671,7 @@ class ProductUtil extends Util
 
             //Set default purchase price inc. tax
             $variation_details->dpp_inc_tax = $this->calc_percentage($variation_details->default_purchase_price, $tax_rate, $variation_details->default_purchase_price);
-       
+
             //Set default sell price exc. tax
             $variation_details->default_sell_price = $variation_data['default_sell_price'];
 
@@ -680,7 +680,7 @@ class ProductUtil extends Util
 
             //set sell price inc. tax
             $variation_details->sell_price_inc_tax = $this->calc_percentage($variation_details->default_sell_price, $tax_rate, $variation_details->default_sell_price);
-            
+
             $variation_details->save();
         }
     }
@@ -960,7 +960,7 @@ class ProductUtil extends Util
                 $purchase_line = PurchaseLine::findOrFail($data['purchase_line_id']);
                 $updated_purchase_line_ids[] = $purchase_line->id;
                 $old_qty = $this->num_f($purchase_line->quantity);
-            
+
                 //Update quantity for existing products
                 if ($before_status == 'received' && $transaction->status == 'received') {
                     //if status received update existing quantity
@@ -999,7 +999,7 @@ class ProductUtil extends Util
             $purchase_line->mfg_date = !empty($data['mfg_date']) ? $this->uf_date($data['mfg_date']) : null;
             $purchase_line->exp_date = !empty($data['exp_date']) ? $this->uf_date($data['exp_date']) : null;
             $purchase_line->sub_unit_id = !empty($data['sub_unit_id']) ? $data['sub_unit_id'] : null;
-        
+
             $updated_purchase_lines[] = $purchase_line;
 
             //Edit product price
@@ -1008,7 +1008,7 @@ class ProductUtil extends Util
                 $variation_data['pp_without_discount'] = ($this->num_uf($data['pp_without_discount'], $currency_details)*$exchange_rate) / $multiplier;
                 $variation_data['variation_id'] = $purchase_line->variation_id;
                 $variation_data['purchase_price'] = $purchase_line->purchase_price;
-             
+
                 $this->updateProductFromPurchase($variation_data);
             }
         }
@@ -1236,7 +1236,7 @@ class ProductUtil extends Util
         }
 
         $discount = $query1->first();
-                    
+
         //Search if either category or brand matches
         if (empty($discount)) {
             $query2 = Discount::where('business_id', $business_id)
@@ -1262,7 +1262,7 @@ class ProductUtil extends Util
             $discount->formated_starts_at = $this->format_date($discount->starts_at->toDateTimeString(), true);
             $discount->formated_ends_at = $this->format_date($discount->ends_at->toDateTimeString(), true);
         }
-             
+
         return $discount;
     }
 }

@@ -444,10 +444,11 @@ function ajax_error(data, form = null, submit = $('#submit')) {
 }
 
 function ajax_success(data, form = null, submit = $('#submit')) {
-    var audio = $('#success-audio')[0];
-    if (audio !== undefined) {
-        audio.play();
-    }
+    // var audio = $('#success-audio')[0];
+    // if (audio !== undefined) {
+    //     audio.play();
+    // }
+    
     p_notify(data.message, 'success', Lang.get('service.success_title'));
     if (check_element('content_modal')) {
         $('#content_modal').modal('hide');
@@ -489,16 +490,16 @@ function show_submit_loading(form = $('#content_form')) {
 function hide_submit_loading(form = $('#content_form')) {
     let button = form.find('#submit');
     button.attr('disabled', false);
-    let card = button.closest('.card');
-    if (card.length > 0) {
-        cardUnblock(card);
-        return;
-    }
     let modal = button.closest('.modal-content');
+    let card = button.closest('.card');
     if (modal.length > 0) {
         cardUnblock(modal);
-        return;
     }
+    if (card.length > 0) {
+        cardUnblock(card);
+    }
+    return;
+
 }
 
 function cardBlock(card) {
@@ -668,8 +669,8 @@ $('#content_modal').on('hide.bs.modal', function() {
     $('.modal-body').html('');
 });
 $('#content_modal').on('shown.bs.modal', function(e) {
-    var ele = $(e.target).find('input[type=text],textarea,select').filter(':visible:first'); // find the first input on the bs modal
-    console.log(ele);
+    var ele = $(e.target).find('input[type=text],textarea,select').filter(':visible:first');
+    // find the first input on the bs modal
     if (ele.length > 0) {
         ele.focus();
     }
@@ -744,6 +745,9 @@ if ($('.product_form').length) {
 }
 $('#type').change(function() {
     show_product_type_form();
+});
+$(document).on('change', '#category_id, #brand_id', function() {
+    get_models();
 });
 
 function show_product_type_form() {
@@ -846,6 +850,28 @@ $(document).on('click', '#add_variation', function() {
     });
 });
 
+function get_models() {
+    var cat = $('#category_id').val();
+    var brand = $('#brand_id').val();
+    if (cat && brand) {
+        $.ajax({
+            method: 'POST',
+            url: '/admin/products/get_models',
+            dataType: 'html',
+            data: {
+                cat_id: cat,
+                brand_id: brand
+            },
+            success: function(result) {
+                if (result) {
+                    $('#model_id').html(result);
+                }
+            },
+        });
+    }
+
+}
+
 function __read_number(input_element, use_page_currency = false) {
     return __number_uf(input_element.val(), use_page_currency);
 }
@@ -876,7 +902,7 @@ function __write_number(
     use_page_currency = false,
     precision = __currency_precision
 ) {
-    if(input_element.hasClass('input_quantity')) {
+    if (input_element.hasClass('input_quantity')) {
         precision = __quantity_precision;
     }
 
@@ -904,3 +930,34 @@ function __get_principle(amount, percentage = 0, minus = false) {
         return (100 * amount) / (100 + percentage);
     }
 }
+
+$(document).on('change', '#brand_id, #category_id, #model_id', function() {
+
+    var product_name = '';
+
+    var brand_name = $('#brand_id option:selected').html();
+    var brand_val = $('#brand_id').val();
+    if (brand_name && brand_val) {
+        product_name += ' ' + brand_name;
+    }
+
+    var model_name = $('#model_id option:selected').html();
+    var model_val = $('#model_id').val();
+    if (model_name && model_val) {
+        product_name += ' ' + model_name;
+    }
+
+    var category_name = $('#category_id option:selected').html();
+    var category_val = $('#category_id').val();
+    if (category_name && category_val) {
+        product_name += ' ' + category_name;
+    }
+
+
+    $('#name').val(product_name);
+})
+
+$(document).on('click', '.submit_product_form', function(e) {
+    var submit_type = $(this).attr('value');
+    $('#submit_type').val(submit_type);
+});

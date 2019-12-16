@@ -59,8 +59,9 @@ class UnitController extends Controller {
 			abort(403, 'Unauthorized action.');
 		}
 
-		$this->repo->create($this->request->all());
-		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.unit')])]);
+		$model = $this->repo->create($this->request->all());
+		$model->name = $model->actual_name;
+		return response()->json(['message' => __('service.created_successfull', ['attribute' => __('page.unit')]), 'model' => $model]);
 	}
 
 	/**

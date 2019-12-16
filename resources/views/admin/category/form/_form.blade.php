@@ -14,7 +14,7 @@
         <p class="help-block">{!! __('service.category_code_help') !!}</p>
       </div>
     </div>
-    @if(!empty($parent_categories))
+   {{--  @if(!empty($parent_categories))
     <div class="col-md-12">
       <div class="form-check form-check-inline">
         <label class="form-check-label">
@@ -28,7 +28,7 @@
         {!! Form::select('parent_id', $parent_categories, null, ['class' => 'form-control select']); !!}
       </div>
     </div>
-    @endif
+    @endif --}}
   </div>
   <div class="form-group row text-center">
     <div class="col-md-12">

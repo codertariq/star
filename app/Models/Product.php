@@ -57,6 +57,13 @@ class Product extends Model {
 	}
 
 	/**
+	 * Get Model associated with the product.
+	 */
+	public function model() {
+		return $this->belongsTo(ModelTemplate::class, 'model_id', 'id');
+	}
+
+	/**
 	 * Get the brand associated with the product.
 	 */
 	public function product_tax() {

@@ -7,13 +7,60 @@
  * ---------------------------------------------------------------------------- */
 // Setup module
 // ------------------------------
-var tariq = '';
+
 var DatatableResponsive = function() {
     // Basic Datatable examples
+    var _componentRemoteModalLoad = function() {
+        $(document).on('click', '#content_managment', function(e) {
+            e.preventDefault();
+            $('#modal-loader').show();
+            cardUnblock($('.modal-content'));
+            var modal = $('#content_modal');
+            //open modal
+            modal.modal('show');
 
+            var element = $(this).data('element');
+            // it will get action url
+            var url = $(this).data('url');
+            // leave it blank before ajax call
+            // load ajax loader
+            $.ajax({
+                    url: url,
+                    type: 'Get',
+                    dataType: 'html'
+                })
+                .done(function(data) {
+                    $('#modal-loader').hide();
+                    $('.modal-body').html(data).fadeIn();
+                    if (element == 'form') {
+                        FormHandle.init('#quick_add_form');
+                    }
+                })
+                .fail(function(data) {
+                    $('#modal-loader').hide();
+                    $('.modal-body').html('<span class="text-danger font-weight-bold" > ' + Lang.get('service.something_wrong') + '</span>').fadeIn();
+                    ajax_error(data);
+                });
+        });
+    }
     return {
         init: function() {
-            FormHandle.init('#content_form');
+            FormHandle.init('#product_form');
+             var editor = CKEDITOR.replace('product_description');
+            _componentRemoteModalLoad();
+            // $('.summernote').summernote({
+            //     toolbar: [
+            //         ['style', ['bold', 'italic', 'underline', 'clear']],
+            //         ['font', ['strikethrough', 'superscript', 'subscript']],
+            //         ['fontsize', ['fontsize']],
+            //         ['color', ['color']],
+            //         ['para', ['ul', 'ol', 'paragraph']],
+            //         ['height', ['height']]
+            //     ]
+            // });
+
+           
+            // editor.removeMenuItem('paste');
 
             //This file contains all functions used products tab
             $(document).on('change', '#enable_stock', function() {
@@ -142,52 +189,52 @@ var DatatableResponsive = function() {
                 var profit_percent = __get_rate(purchase_exc_tax, selling_price);
                 __write_number($('#profit_percent'), profit_percent);
             });
-            $(document).on('click', '.submit_product_form', function(e) {
-                e.preventDefault();
-                var submit_type = $(this).attr('value');
-                $('#submit_type').val(submit_type);
-                $('form#product_add_form').validate({
-                    rules: {
-                        sku: {
-                            remote: {
-                                url: '/admin/products/check_product_sku',
-                                type: 'post',
-                                data: {
-                                    sku: function() {
-                                        return $('#sku').val();
-                                    },
-                                    product_id: function() {
-                                        if ($('#product_id').length > 0) {
-                                            return $('#product_id').val();
-                                        } else {
-                                            return '';
-                                        }
-                                    },
-                                },
-                            },
-                        },
-                        expiry_period: {
-                            required: {
-                                depends: function(element) {
-                                    return (
-                                        $('#expiry_period_type')
-                                        .val()
-                                        .trim() != ''
-                                    );
-                                },
-                            },
-                        },
-                    },
-                    messages: {
-                        sku: {
-                            remote: Lang.sku_already_exists,
-                        },
-                    },
-                });
-                if ($('form#product_add_form').valid()) {
-                    $('form#product_add_form').submit();
-                }
-            });
+            // $(document).on('click', '.submit_product_form', function(e) {
+            //     e.preventDefault();
+            //     var submit_type = $(this).attr('value');
+            //     $('#submit_type').val(submit_type);
+            //     $('form#product_add_form').validate({
+            //         rules: {
+            //             sku: {
+            //                 remote: {
+            //                     url: '/admin/products/check_product_sku',
+            //                     type: 'post',
+            //                     data: {
+            //                         sku: function() {
+            //                             return $('#sku').val();
+            //                         },
+            //                         product_id: function() {
+            //                             if ($('#product_id').length > 0) {
+            //                                 return $('#product_id').val();
+            //                             } else {
+            //                                 return '';
+            //                             }
+            //                         },
+            //                     },
+            //                 },
+            //             },
+            //             expiry_period: {
+            //                 required: {
+            //                     depends: function(element) {
+            //                         return (
+            //                             $('#expiry_period_type')
+            //                             .val()
+            //                             .trim() != ''
+            //                         );
+            //                     },
+            //                 },
+            //             },
+            //         },
+            //         messages: {
+            //             sku: {
+            //                 remote: Lang.sku_already_exists,
+            //             },
+            //         },
+            //     });
+            //     if ($('form#product_add_form').valid()) {
+            //         $('form#product_add_form').submit();
+            //     }
+            // });
             //End for product type single
             //Start for product type Variable
             //If purchase price exc tax is changed
@@ -355,9 +402,9 @@ var DatatableResponsive = function() {
                 });
             });
             //If tax rate is changed
-            $(document).on('change', 'select#tax', function() {
-                if ($('select#type').val() == 'variable') {
-                    var tax_rate = $('select#tax')
+            $(document).on('change', '#tax', function() {
+                if ($('#type').val() == 'variable') {
+                    var tax_rate = $('#tax')
                         .find(':selected')
                         .data('rate');
                     tax_rate = tax_rate == undefined ? 0 : tax_rate;
@@ -437,32 +484,7 @@ var DatatableResponsive = function() {
             }*/
 
             //Quick add unit
-            $(document).on('submit', 'form#quick_add_unit_form', function(e) {
-                e.preventDefault();
-                $(this)
-                    .find('button[type="submit"]')
-                    .attr('disabled', true);
-                var data = $(this).serialize();
-                $.ajax({
-                    method: 'POST',
-                    url: $(this).attr('action'),
-                    dataType: 'json',
-                    data: data,
-                    success: function(result) {
-                        if (result.success == true) {
-                            var newOption = new Option(result.data.short_name, result.data.id, true, true);
-                            // Append it to the select
-                            $('#unit_id')
-                                .append(newOption)
-                                .trigger('change');
-                            $('div.view_modal').modal('hide');
-                            toastr.success(result.msg);
-                        } else {
-                            toastr.error(result.msg);
-                        }
-                    },
-                });
-            });
+            
 
         }
     }

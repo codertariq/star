@@ -116,3 +116,8 @@ Breadcrumbs::for ('products.create', function ($trail) {
 	$trail->push(__('page.product'), route('admin.products.index'));
 	$trail->push(__('product.add_new_product'), route('admin.products.create'));
 });
+
+Breadcrumbs::for ('products.index', function ($trail) {
+	$trail->push(__('page.home'), route('home'));
+	$trail->push(__('page.product'), route('admin.products.index'));
+});

@@ -12,13 +12,14 @@ use App\Models\Unit;
 use App\Repositories\Repository;
 use App\Utils\ProductUtil;
 use App\Utils\Util;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Permission;
 use Yajra\Datatables\Datatables;
 
 class ProductRepositoriy extends Repository {
 
-	protected $productUtil;
+	public $productUtil;
 	protected $moduleUtil;
 
 	private $barcode_types;
@@ -80,6 +81,7 @@ class ProductRepositoriy extends Repository {
 	 * @return array
 	 */
 	public function getAll() {
+
 		return $this->model->all();
 	}
 	/**
@@ -91,11 +93,13 @@ class ProductRepositoriy extends Repository {
 	public function find($id) {
 		return $this->model->find($id);
 	}
+
 	/**
 	 * Find model with given id or throw an error.
 	 *
 	 * @param integer $id
 	 * @return Product
+	 * @throws ValidationException
 	 */
 	public function findOrFail($id, $field = 'message') {
 		$model = $this->model->find($id);
@@ -108,27 +112,96 @@ class ProductRepositoriy extends Repository {
 	 * Get all data for Index
 	 */
 	public function datatable() {
-		$models = $this->model->where('business_id', $this->getBussinessId())
-			->select(['name', 'description', 'id']);
+		$business_id = $this->getBussinessId();
+		$models = $this->model->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+			->join('units', 'products.unit_id', '=', 'units.id')
+			->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
+			->leftJoin('models as m', 'products.model_id', '=', 'm.id')
+			->leftJoin('tax_rates', 'products.tax', '=', 'tax_rates.id')
+			->leftJoin('variation_location_details as vld', 'vld.product_id', '=', 'products.id')
+			->join('variations as v', 'v.product_id', '=', 'products.id')
+			->where('products.business_id', $business_id)
+			->where('products.type', '!=', 'modifier')
+			->select(
+				'products.id',
+				'products.name as product',
+				'products.type',
+				'c1.name as category',
+				'm.name as model',
+				'units.actual_name as unit',
+				'brands.name as brand',
+				'tax_rates.name as tax',
+				'products.sku',
+				'products.image',
+				'products.enable_stock',
+				'products.is_inactive',
+				DB::raw('SUM(vld.qty_available) as current_stock'),
+				DB::raw('MAX(v.sell_price_inc_tax) as max_price'),
+				DB::raw('MIN(v.sell_price_inc_tax) as min_price')
+			)->groupBy('products.id');
+
+		$type = request()->get('type', null);
+		if (!empty($type)) {
+			$models->where('products.type', $type);
+		}
+
+		$category_id = request()->get('category_id', null);
+		if (!empty($category_id)) {
+			$models->where('products.category_id', $category_id);
+		}
+
+		$brand_id = request()->get('brand_id', null);
+		if (!empty($brand_id)) {
+			$models->where('products.brand_id', $brand_id);
+		}
+
+		$unit_id = request()->get('unit_id', null);
+		if (!empty($unit_id)) {
+			$models->where('products.unit_id', $unit_id);
+		}
+
+		$tax_id = request()->get('tax_id', null);
+		if (!empty($tax_id)) {
+			$models->where('products.tax', $tax_id);
+		}
 
 		return Datatables::of($models)
 			->addIndexColumn()
-			->editColumn('name', function ($model) {
-				return '<strong>' . $model->name . '</strong>';
+			->editColumn('product', function ($row) {
+				$product = $row->is_inactive == 1 ? $row->product . ' <span class="label bg-gray">Inactive
+                        </span>' : $row->product;
+				return $product;
 			})
 
-			->removeColumn('id')
+			->editColumn('image', function ($row) {
+				return '<div style="display: flex;"><img src="' . $row->image_url . '" alt="Product image" class="product-thumbnail-small"></div>';
+			})
+			->editColumn('type', '@lang("service." . $type)')
+
+			->editColumn('current_stock', '@if($enable_stock == 1) {{@number_format($current_stock)}} @else -- @endif {{$unit}}')
+			->addColumn(
+				'price',
+				'<div style="white-space: nowrap;"><span class="display_currency" data-currency_symbol="true">{{$min_price}}</span> @if($max_price != $min_price && $type == "variable") -  <span class="display_currency" data-currency_symbol="true">{{$max_price}}</span>@endif </div>'
+			)
+			->setRowAttr([
+				'data-url' => function ($row) {
+					if (auth()->user()->can("product.view")) {
+						return route('admin.products.view', [$row->id]);
+					} else {
+						return '';
+					}
+				}, 'id' => 'content_managment'])
 			->addColumn('action', function ($model) {
 
 				$action['route'] = $this->route;
 				$action['permission'] = $this->permission;
 				$action['action_exeption'] = $this->action_exeption;
-				return view('admin.brand.action', compact('model', 'action'));
+				return view('admin.product.action', compact('model', 'action'));
 
 			})
 
 			->removeColumn(['created_at', 'updated_at'])
-			->rawColumns(['action', 'name', 'status'])
+			->rawColumns(['action', 'product', 'image', 'current_stock', 'price'])
 			->make(true);
 	}
 	public function preRequisite($id = Null) {
@@ -185,8 +258,29 @@ class ProductRepositoriy extends Repository {
 	 * @return Product
 	 */
 	public function create($params) {
-		$tax_rate = $this->model->forceCreate($this->formatParams($params));
-		return $tax_rate;
+		$product = $this->model->forceCreate($this->formatParams($params));
+
+		if (!trim(gv($params, 'sku'))) {
+			$sku = $this->productUtil->generateProductSku($product->id);
+			$product->sku = $sku;
+			$product->save();
+		}
+
+		if ($product->type == 'single') {
+			$this->productUtil->createSingleProductVariation($product->id, $product->sku, gv($params, 'single_dpp'), gv($params, 'single_dpp_inc_tax'), gv($params, 'profit_percent'), gv($params, 'single_dsp'), gv($params, 'single_dsp_inc_tax'));
+		} elseif ($product->type == 'variable') {
+			if (gv($params, 'product_variation')) {
+				$input_variations = gv($params, 'product_variation');
+				$this->productUtil->createVariableProductVariations($product->id, $input_variations);
+			}
+		}
+
+		//Add product racks details.
+		$product_racks = gv($params, 'product_racks');
+		if (!empty($product_racks)) {
+			$this->productUtil->addRackDetails($business_id, $product->id, $product_racks);
+		}
+		return $product;
 	}
 	/**
 	 * Prepare given params for inserting into database.
@@ -198,10 +292,52 @@ class ProductRepositoriy extends Repository {
 	private function formatParams($params, $model_id = null) {
 		$formatted = [
 			'name' => gv($params, 'name'),
-			'description' => gv($params, 'description'),
+			'brand_id' => gv($params, 'brand_id'),
+			'unit_id' => gv($params, 'unit_id'),
+			'category_id' => gv($params, 'category_id'),
+			'model_id' => gv($params, 'model_id'),
+			'tax' => gv($params, 'tax'),
+			'type' => gv($params, 'type'),
+			'barcode_type' => gv($params, 'barcode_type'),
+			'sku' => gv($params, 'sku'),
+			'alert_quantity' => gv($params, 'alert_quantity'),
+			'tax_type' => gv($params, 'tax_type'),
+			'weight' => gv($params, 'weight'),
+			'product_custom_field1' => gv($params, 'product_custom_field1'),
+			'product_custom_field2' => gv($params, 'product_custom_field2'),
+			'product_custom_field3' => gv($params, 'product_custom_field3'),
+			'product_custom_field4' => gv($params, 'product_custom_field4'),
+			'product_description' => gv($params, 'product_description'),
+
 			'created_by' => $this->getUserId(),
 			'business_id' => $this->getBussinessId(),
 		];
+
+		$formatted['enable_stock'] = (gbv($params, 'enable_stock') && gbv($params, 'enable_stock') == 1) ? 1 : 0;
+		$formatted['alert_quantity'] = gv($params, 'alert_quantity');
+
+		if (empty($formatted['sku'])) {
+			$formatted['sku'] = ' ';
+		}
+
+		$expiry_enabled = request()->session()->get('business.enable_product_expiry');
+		if (gv($params, 'expiry_period_type') && gv($params, 'expiry_period') && !empty($expiry_enabled) && ($formatted['enable_stock'] == 1)) {
+			$formatted['expiry_period_type'] = gv($params, 'expiry_period_type');
+			$formatted['expiry_period'] = $this->productUtil->num_uf(gv($params, 'expiry_period'));
+		}
+		$formatted['is_lifetime'] = gbv($params, 'is_lifetime');
+		if (gbv($params, 'is_lifetime') && gv($params, 'warenty_period_type') && gv($params, 'warenty_period')) {
+			$formatted['warenty_period_type'] = gv($params, 'warenty_period_type');
+			$formatted['warenty_period'] = $this->productUtil->num_uf(gv($params, 'warenty_period'));
+			$formatted['is_lifetime'] = 0;
+		}
+
+		if (gbv($params, 'enable_sr_no') && gbv($params, 'enable_sr_no') == 1) {
+			$formatted['enable_sr_no'] = 1;
+		}
+
+		//upload document
+		$formatted['image'] = $this->productUtil->uploadFile($params, 'image', config('constants.product_img_path'));
 
 		return $formatted;
 	}
@@ -223,6 +359,7 @@ class ProductRepositoriy extends Repository {
 	 *
 	 * @param integer $id
 	 * @return Product
+	 * @throws ValidationException
 	 */
 	public function deletable($id) {
 		$model = $this->findOrFail($id);
@@ -238,11 +375,13 @@ class ProductRepositoriy extends Repository {
 		}
 		return $model;
 	}
+
 	/**
 	 * Delete model.
 	 *
 	 * @param integer $id
 	 * @return bool|null
+	 * @throws \Exception
 	 */
 	public function delete(Product $model) {
 		return $model->delete();

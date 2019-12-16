@@ -1,6 +1,6 @@
 @php
 //arrtibutes : form= true, false; modal= false, full, normal, lg, xs, sm; ;list = true, false
-$data['attribute'] = ['form' => true, 'list' => false, 'modal' => false];
+$data['attribute'] = ['form' => true, 'list' => false, 'modal' => true];
 $data['breadcrumbs'] = 'products.create';
 $data['create'] = 'link';
 $data['icon'] = 'fa fa-file';
@@ -19,7 +19,7 @@ $data['page_index'] = 'admin.products.create';
 @stop
 @section('content')
 <div class="content">
-	{!! Form::open(['route' => $data['route'].'store', 'class' => 'form-validate-jquery product_form', 'id' => 'content_form', 'files' => true, 'method' => 'POST']) !!}
+	{!! Form::open(['route' => $data['route'].'store', 'class' => 'form-validate-jquery product_form', 'id' => 'product_form', 'files' => true, 'method' => 'POST']) !!}
 	<fieldset class="mb-3">
 		<div class="card border-success" id="table_card">
 			<div class="card-header header-elements-inline text-success-800 border-bottom-success alpha-info ">
@@ -47,6 +47,32 @@ $data['page_index'] = 'admin.products.create';
 					<div class="col-md-12">
 						<legend class="text-uppercase font-size-sm font-weight-bold">{{isset($submit) ? $submit : ''}} <span class="text-danger">*</span> <small> {{ __('service.required', ['attribute' => gv($data, 'page')]) }} </small></legend>
 						<div class="row">
+							<div class="col-sm-4 @if(!session('business.enable_brand')) hide @endif">
+								<div class="form-group">
+									<label for="brand_id">{{ __('product.brand') }} <span  @if(!auth()->user()->can('brand.create')) disabled @endif  data-url="{{route('admin.brands.create', ['quick_add' => true])}}" title="@lang('brand.add_brand')" class="ml-2" style="cursor: pointer;" id="content_managment"
+									data-element="form"><i class="fa fa-plus-circle text-primary fa-lg"></i></span></label>
+									<div class="input-group">
+										{!! Form::select('brand_id', $brands, !empty($duplicate_product->brand_id) ? $duplicate_product->brand_id : null, ['data-placeholder' => __('messages.please_select'), 'class' => 'form-control select', 'id' => 'brand_id']); !!}
+										<span class="input-group-append">
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-sm-4 @if(!session('business.enable_category')) hide @endif">
+								<div class="form-group">
+									{!! Form::label('category_id', __('product.category') . ':') !!}
+									{!! Form::select('category_id', $categories, !empty($duplicate_product->category_id) ? $duplicate_product->category_id : null, ['data-placeholder' => __('messages.please_select'), 'class' => 'form-control select']); !!}
+								</div>
+							</div>
+							<div class="col-sm-4 @if(!session('business.enable_category') and !session('business.enable_brand')) hide @endif">
+								<div class="form-group">
+									{!! Form::label('model_id', __('product.model') . ':') !!}
+									{!! Form::select('model_id', $sub_categories, !empty($duplicate_product->model_id) ? $duplicate_product->model_id : null, ['data-placeholder' => __('messages.please_select'), 'class' => 'form-control select']); !!}
+								</div>
+							</div>
+						</div>
+						<div class="row">
 							<div class="col-sm-4">
 								<div class="form-group">
 									{!! Form::label('name', __('product.product_name') . ':*') !!}
@@ -54,38 +80,21 @@ $data['page_index'] = 'admin.products.create';
 									'placeholder' => __('product.product_name')]); !!}
 								</div>
 							</div>
-							<div class="col-sm-4 @if(!session('business.enable_brand')) hide @endif">
-								<div class="form-group">
-									<label for="brand_id">{{ __('product.brand') }} <span  @if(!auth()->user()->can('brand.create')) disabled @endif  data-href="{{route('admin.brands.create', ['quick_add' => true])}}" title="@lang('brand.add_brand')" class="ml-2" style="cursor: pointer;"><i class="fa fa-plus-circle text-primary fa-lg"></i></span></label>
-									<div class="input-group">
-										{!! Form::select('brand_id', $brands, !empty($duplicate_product->brand_id) ? $duplicate_product->brand_id : null, ['data-placeholder' => __('messages.please_select'), 'class' => 'form-control select']); !!}
-										<span class="input-group-append">
-										</span>
-									</div>
-								</div>
-							</div>
 							<div class="col-sm-4">
 								<div class="form-group">
-									<label for="unit_id">{{ __('product.unit') }} <span @if(!auth()->user()->can('unit.create')) disabled @endif  data-href="{{route('admin.units.create', ['quick_add' => true])}}" title="@lang('unit.add_unit')" class="ml-2" style="cursor: pointer;"><i class="fa fa-plus-circle text-primary fa-lg"></i></span></label>
+									<label for="unit_id">{{ __('product.unit') }} <span @if(!auth()->user()->can('unit.create')) disabled @endif  data-url="{{route('admin.units.create', ['quick_add' => true])}}" title="@lang('unit.add_unit')" class="ml-2" style="cursor: pointer;" id="content_managment"
+									data-element="form"><i class="fa fa-plus-circle text-primary fa-lg"></i></span></label>
 									<div class="input-group">
-										{!! Form::select('unit_id', $units, !empty($duplicate_product->unit_id) ? $duplicate_product->unit_id : session('business.default_unit'), ['class' => 'form-control select', 'required', 'data-placeholder' => 'Please Select']); !!}
+										{!! Form::select('unit_id', $units, !empty($duplicate_product->unit_id) ? $duplicate_product->unit_id : session('business.default_unit'), ['class' => 'form-control select', 'required', 'data-placeholder' => 'Please Select', 'id' => 'unit_id']); !!}
 									</div>
 								</div>
 							</div>
-							</div>
-							<div class="row">
-							<div class="col-sm-4 @if(!session('business.enable_category')) hide @endif">
-								<div class="form-group">
-									{!! Form::label('category_id', __('product.category') . ':') !!}
-									{!! Form::select('category_id', $categories, !empty($duplicate_product->category_id) ? $duplicate_product->category_id : null, ['data-placeholder' => __('messages.please_select'), 'class' => 'form-control select']); !!}
-								</div>
-							</div>
-							<div class="col-sm-4 @if(!(session('business.enable_category') && session('business.enable_sub_category'))) hide @endif">
+							{{-- <div class="col-sm-4 @if(!(session('business.enable_category') && session('business.enable_sub_category'))) hide @endif">
 								<div class="form-group">
 									{!! Form::label('sub_category_id', __('product.sub_category') . ':') !!}
 									{!! Form::select('sub_category_id', $sub_categories, !empty($duplicate_product->sub_category_id) ? $duplicate_product->sub_category_id : null, ['data-placeholder' => __('messages.please_select'), 'class' => 'form-control select']); !!}
 								</div>
-							</div>
+							</div> --}}
 							<div class="col-sm-4">
 								<div class="form-group">
 									{!! Form::label('sku', __('product.sku') . ':') !!} @show_tooltip(__('tooltip.sku'))
@@ -93,8 +102,8 @@ $data['page_index'] = 'admin.products.create';
 									'placeholder' => __('product.sku')]); !!}
 								</div>
 							</div>
-							</div>
-							<div class="row">
+						</div>
+						<div class="row">
 							<div class="col-sm-4">
 								<div class="form-group">
 									{!! Form::label('barcode_type', __('product.barcode_type') . ':*') !!}
@@ -118,8 +127,8 @@ $data['page_index'] = 'admin.products.create';
 									'placeholder' => __('product.alert_quantity'), 'min' => '0']); !!}
 								</div>
 							</div>
-							</div>
-							<div class="row">
+						</div>
+						<div class="row">
 							<div class="col-sm-8">
 								<div class="form-group">
 									{!! Form::label('product_description', __('service.product_description') . ':') !!}
@@ -201,8 +210,8 @@ $data['page_index'] = 'admin.products.create';
 							</div>
 						</div>
 					</div>
-					</div>
-					<div class="row">
+				</div>
+				<div class="row">
 					<!-- Rack, Row & position number -->
 					@if(session('business.enable_racks') || session('business.enable_row') || session('business.enable_position'))
 					<div class="col-md-12">
@@ -237,8 +246,8 @@ $data['page_index'] = 'admin.products.create';
 					</div>
 					@endif
 					<!--custom fields-->
-					</div>
-					<div class="row">
+				</div>
+				<div class="row">
 					<div class="col-sm-3">
 						<div class="form-group">
 							{!! Form::label('product_custom_field1',  __('service.product_custom_field1') . ':') !!}
@@ -264,8 +273,8 @@ $data['page_index'] = 'admin.products.create';
 						</div>
 					</div>
 					<!--custom fields-->
-					</div>
-					<div class="row">
+				</div>
+				<div class="row">
 					{{-- @include('layouts.partials.module_form_part') --}}
 				</div>
 			</div>
@@ -321,34 +330,24 @@ $data['page_index'] = 'admin.products.create';
 	</div>
 	@stop
 	@push('js')
-	<script src="{{ asset('global_assets/js/plugins/editors/summernote/summernote.min.js') }}"></script>
 	<script src="{{ asset('js/pages/admin/product.js') }}"></script>
+	<script src="{{ asset('global_assets/js/plugins/editors/ckeditor/ckeditor.js') }}"></script>
 	<script>
 		_componentTooltipCustomColor();
-	_componentSelect2();
-	_componentUniform();
-	$('.summernote').summernote({
-		toolbar: [
-	['style', ['bold', 'italic', 'underline', 'clear']],
-	['font', ['strikethrough', 'superscript', 'subscript']],
-	['fontsize', ['fontsize']],
-	['color', ['color']],
-	['para', ['ul', 'ol', 'paragraph']],
-	['height', ['height']]
-	]
-	});
-	$('select#design').change(function() {
-	if ($(this).val() == 'columnize-taxes') {
-	$('div#columnize-taxes').removeClass('hide');
-	$('div#columnize-taxes')
-	.find('input')
-	.removeAttr('disabled', 'false');
-	} else {
-	$('div#columnize-taxes').addClass('hide');
-	$('div#columnize-taxes')
-	.find('input')
-	.attr('disabled', 'true');
-	}
-	});
+		_componentSelect2();
+		_componentUniform();
+		$('select#design').change(function() {
+		if ($(this).val() == 'columnize-taxes') {
+		$('div#columnize-taxes').removeClass('hide');
+		$('div#columnize-taxes')
+		.find('input')
+		.removeAttr('disabled', 'false');
+		} else {
+		$('div#columnize-taxes').addClass('hide');
+		$('div#columnize-taxes')
+		.find('input')
+		.attr('disabled', 'true');
+		}
+		});
 	</script>
 	@endpush

@@ -77,6 +77,7 @@ Route::group(['namespace' => 'Admin', 'middleware' => ['auth', 'active', 'auth',
 	Route::put('action/selling-price-group', 'SellingPriceGroupController@action')->name('selling-price-group.action');
 	Route::resource('selling-price-group', 'SellingPriceGroupController');
 
+	Route::post('/products/get_models', 'ProductController@getSubModels');
 	Route::post('/products/get_sub_categories', 'ProductController@getSubCategories');
 	Route::post('/products/product_form_part', 'ProductController@getProductVariationFormPart');
 	Route::post('/products/get_product_variation_row', 'ProductController@getProductVariationRow');
@@ -86,7 +87,14 @@ Route::group(['namespace' => 'Admin', 'middleware' => ['auth', 'active', 'auth',
 	Route::get('/products/quick_add', 'ProductController@quickAdd');
 	Route::post('/products/save_quick_product', 'ProductController@saveQuickProduct');
 
+	Route::get('/products/add-selling-prices/{id}', 'ProductController@addSellingPrices')->name('add-selling-prices.create');
+	Route::post('/products/save-selling-prices', 'ProductController@saveSellingPrices')->name('add-selling-prices.store');
+
+	Route::get('/products/view/{id}', 'ProductController@view')->name('products.view');
 	Route::resource('products', 'ProductController');
+
+	Route::get('/opening-stock/add/{product_id}', 'OpeningStockController@add')->name('opening-stock.create');
+	Route::post('/opening-stock/save', 'OpeningStockController@save')->name('opening-stock.store');
 
 });
 
