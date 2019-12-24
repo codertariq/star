@@ -1,6 +1,6 @@
 @php
 //arrtibutes : form= true, false; modal= false, full, normal, lg, xs, sm; ;list = true, false
-$data['attribute'] = ['form' => false, 'list' => true, 'modal' => 'full'];
+$data['attribute'] = ['form' => true, 'list' => true, 'modal' => 'full'];
 $data['breadcrumbs'] = 'products.index';
 $data['create'] = 'link';
 $data['icon'] = 'fa fa-file';
@@ -111,4 +111,5 @@ $data['page_index'] = 'admin.products.index';
 @stop
 @push('js')
 <script src="{{ asset('js/pages/admin/product_list.js') }}"></script>
+<script src="{{ asset('js/pages/admin/opening_stock.js') }}"></script>
 @endpush

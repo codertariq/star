@@ -77,3 +77,27 @@ function getUserRoleName($user_id) {
 	}
 	return $role_name;
 }
+
+function productSerialForSelect($product_id, $variation_id) {
+
+	$serial = \App\ModelsProductSerial::where('product_id', $product_id)->where('variation_id', $variation_id)->where('sell_line_id', Null)->get(['id', 'serial_no']);
+
+	$serial_no = [];
+	foreach ($serial as $value) {
+		$serial_no[$value->serial_no] = $value->serial_no;
+	}
+
+	return $serial_no;
+}
+
+function productSerialForShow($product_id, $purchase_line_id, $variation_id) {
+
+	$serial = \App\Models\ProductSerial::where('product_id', $product_id)->where('purchase_line_id', $purchase_line_id)->where('sell_line_id', Null)->where('variation_id', $variation_id)->get(['serial_no']);
+
+	$serial_no = [];
+	foreach ($serial as $value) {
+		$serial_no[] = $value->serial_no;
+	}
+
+	return implode(',', $serial_no);
+}

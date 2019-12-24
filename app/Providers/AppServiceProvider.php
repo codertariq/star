@@ -81,6 +81,19 @@ class AppServiceProvider extends ServiceProvider {
 			}
 		});
 
+		Blade::directive('format_datetime', function ($date) {
+			if (!empty($date)) {
+				$time_format = 'h:i A';
+				if (session('business.time_format') == 24) {
+					$time_format = 'H:i';
+				}
+
+				return "\Carbon\Carbon::createFromTimestamp(strtotime($date))->format(session('business.date_format') . ' ' . '$time_format')";
+			} else {
+				return null;
+			}
+		});
+
 		Activity::saving(function (Activity $activity) {
 			$activity->properties = $activity->properties->put('ip', getClientIp());
 			$activity->properties = $activity->properties->put('user_agent', \Request::header('User-Agent'));

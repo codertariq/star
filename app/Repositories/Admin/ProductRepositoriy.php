@@ -5,10 +5,12 @@ use App\Models\Brand;
 use App\Models\Business;
 use App\Models\BusinessLocation;
 use App\Models\Category;
+use App\Models\ModelTemplate;
 use App\Models\Product;
 use App\Models\SellingPriceGroup;
 use App\Models\TaxRate;
 use App\Models\Unit;
+use App\Models\Variation;
 use App\Repositories\Repository;
 use App\Utils\ProductUtil;
 use App\Utils\Util;
@@ -183,14 +185,14 @@ class ProductRepositoriy extends Repository {
 				'price',
 				'<div style="white-space: nowrap;"><span class="display_currency" data-currency_symbol="true">{{$min_price}}</span> @if($max_price != $min_price && $type == "variable") -  <span class="display_currency" data-currency_symbol="true">{{$max_price}}</span>@endif </div>'
 			)
-			->setRowAttr([
-				'data-url' => function ($row) {
-					if (auth()->user()->can("product.view")) {
-						return route('admin.products.view', [$row->id]);
-					} else {
-						return '';
-					}
-				}, 'id' => 'content_managment'])
+		// ->setRowAttr([
+		// 	'data-url' => function ($row) {
+		// 		if (auth()->user()->can("product.view")) {
+		// 			return route('admin.products.view', [$row->id]);
+		// 		} else {
+		// 			return '';
+		// 		}
+		// 	}, 'id' => 'content_managment'])
 			->addColumn('action', function ($model) {
 
 				$action['route'] = $this->route;
@@ -230,6 +232,8 @@ class ProductRepositoriy extends Repository {
 		$rack_details = null;
 
 		$sub_categories = [];
+
+		$selling_price_group_count = SellingPriceGroup::countSellingPriceGroups($business_id);
 		if (!empty(request()->input('d'))) {
 			$duplicate_product = $this->model->where('business_id', $business_id)->find(request()->input('d'));
 			$duplicate_product->name .= ' (copy)';
@@ -245,9 +249,18 @@ class ProductRepositoriy extends Repository {
 			if (!empty($duplicate_product->id)) {
 				$rack_details = $this->productUtil->getRackDetails($business_id, $duplicate_product->id);
 			}
-		}
+		} elseif ($id) {
+			$product = $this->findOrFail($id);
+			$models = ModelTemplate::where('business_id', $business_id)
+				->where('category_id', $product->category_id)
+				->where('brand_id', $product->brand_id)
+				->pluck('name', 'id')
+				->toArray();
 
-		$selling_price_group_count = SellingPriceGroup::countSellingPriceGroups($business_id);
+			$models = ["" => "None"] + $models;
+			$compact = compact('categories', 'brands', 'units', 'tax_dropdown', 'taxes', 'tax_attributes', 'barcode_types', 'barcode_default', 'default_profit_percent', 'business_locations', 'duplicate_product', 'rack_details', 'sub_categories', 'models', 'selling_price_group_count');
+			return $compact;
+		}
 		$compact = compact('categories', 'brands', 'units', 'tax_dropdown', 'taxes', 'tax_attributes', 'barcode_types', 'barcode_default', 'default_profit_percent', 'business_locations', 'duplicate_product', 'rack_details', 'sub_categories', 'selling_price_group_count');
 		return $compact;
 	}
@@ -351,6 +364,42 @@ class ProductRepositoriy extends Repository {
 	 */
 	public function update(Product $model, $params) {
 		$model->forceFill($this->formatParams($params, $model->id))->save();
+		$product = $this->findOrFail($model->id);
+		if ($product->type == 'single') {
+
+			$variation = Variation::find($params['single_variation_id']);
+
+			$variation->sub_sku = $product->sku;
+			$variation->default_purchase_price = $this->productUtil->num_uf($params['single_dpp']);
+			$variation->dpp_inc_tax = $this->productUtil->num_uf($params['single_dpp_inc_tax']);
+			$variation->profit_percent = $this->productUtil->num_uf($params['profit_percent']);
+			$variation->default_sell_price = $this->productUtil->num_uf($params['single_dsp']);
+			$variation->sell_price_inc_tax = $this->productUtil->num_uf($params['single_dsp_inc_tax']);
+			$variation->save();
+		} elseif ($product->type == 'variable') {
+			//Update existing variations
+			$input_variations_edit = $params['product_variation_edit'];
+			if (!empty($input_variations_edit)) {
+				$this->productUtil->updateVariableProductVariations($product->id, $input_variations_edit);
+			}
+
+			//Add new variations created.
+			$input_variations = $params['product_variation'];
+			if (!empty($input_variations)) {
+				$this->productUtil->createVariableProductVariations($product->id, $input_variations);
+			}
+		}
+
+		//Add product racks details.
+		$product_racks = gv($params, 'product_racks');
+		if (!empty($product_racks)) {
+			$this->productUtil->addRackDetails($business_id, $product->id, $product_racks);
+		}
+
+		$product_racks_update = gv($params, 'product_racks_update');
+		if (!empty($product_racks_update)) {
+			$this->productUtil->updateRackDetails($business_id, $product->id, $product_racks_update);
+		}
 		return $model;
 	}
 

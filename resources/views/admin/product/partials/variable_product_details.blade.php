@@ -24,7 +24,7 @@
 			        @endif
 				</tr>
 				@foreach($product->variations as $variation)
-				<tr>
+				<tr class="table-success">
 					<td>
 						{{$variation->product_variation->name}} - {{ $variation->name }}
 					</td>

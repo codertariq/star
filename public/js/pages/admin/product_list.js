@@ -109,6 +109,10 @@ var DatatableResponsive = function() {
                         if (element == 'form') {
                             FormHandle.init();
                         }
+                        $('.os_exp_date').datepicker({
+                            autoclose: true,
+                            format: datepicker_date_format,
+                        });
                     })
                     .fail(function(data) {
                         $('#modal-loader').hide();

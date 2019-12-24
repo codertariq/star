@@ -170,7 +170,17 @@ class ProductController extends Controller {
 
 		$model = $this->repo->findOrFail($id);
 		$this->repo->update($model, $this->request->all());
-		return response()->json(['message' => __('service.updated_successfull', ['attribute' => __('page.product')])]);
+		$goto = '';
+		if ($request->input('submit_type') == 'submit_n_add_opening_stock') {
+			$goto = route('admin.opening-stock.create', $product->id);
+		} elseif ($request->input('submit_type') == 'submit_n_add_selling_prices') {
+			$goto = route('admin.add-selling-prices.create', $product->id);
+		} elseif ($request->input('submit_type') == 'save_n_add_another') {
+			$goto = route('admin.products.create', $product->id);
+		} else {
+			$goto = route('admin.products.index');
+		}
+		return response()->json(['message' => __('service.updated_successfull', ['attribute' => __('page.product')]), 'goto' => $goto]);
 	}
 
 	/**

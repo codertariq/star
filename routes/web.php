@@ -96,6 +96,13 @@ Route::group(['namespace' => 'Admin', 'middleware' => ['auth', 'active', 'auth',
 	Route::get('/opening-stock/add/{product_id}', 'OpeningStockController@add')->name('opening-stock.create');
 	Route::post('/opening-stock/save', 'OpeningStockController@save')->name('opening-stock.store');
 
+	Route::get('/purchases/get_products', 'PurchaseController@getProducts');
+	Route::get('/purchases/get_suppliers', 'PurchaseController@getSuppliers');
+	Route::post('/purchases/get_purchase_entry_row', 'PurchaseController@getPurchaseEntryRow');
+	Route::post('/purchases/check_ref_number', 'PurchaseController@checkRefNumber');
+	Route::get('/purchases/print/{id}', 'PurchaseController@printInvoice');
+	Route::resource('purchases', 'PurchaseController');
+
 });
 
 Route::group(['middleware' => ['auth', 'active', 'auth', 'SetSessionData', 'timezone'], 'prefix' => 'admin', 'as' => 'admin.'], function () {

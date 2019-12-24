@@ -57,7 +57,7 @@
 		@endif
 		<!-- Application Panel -->
 		@php
-		$user_page = ['admin.units.index', 'admin.categories.index', 'admin.brands.index', 'admin.variation-templates.index', 'admin.models.index', 'admin.selling-price-group.index', 'admin.products.create'];
+		$user_page = ['admin.units.index', 'admin.categories.index', 'admin.brands.index', 'admin.variation-templates.index', 'admin.models.index', 'admin.selling-price-group.index', 'admin.products.create', 'admin.products.index', 'admin.products.edit'];
 		@endphp
 		 @if(auth()->user()->can('product.view') ||
         auth()->user()->can('product.create') ||
@@ -71,6 +71,12 @@
 			<a href="#" class="nav-link"><i class="icon-dice"></i> <span>Product Mangement</span></a>
 			<ul class="nav nav-group-sub" data-submenu-title="Product Mangement" {!!nav_item_open($user_page, request()->route()->getName(), 'style="display: block; "') !!}>
 				@if(auth()->user()->can('product.create') or auth()->user()->can('product.view'))
+				<li class="nav-item">
+					<a href="{{ route('admin.products.index') }}" class="nav-link {{ active_link('admin.products.index') }}">
+						<i class="icon-list2"></i>
+						<span>@lang('service.list_products')</span>
+					</a>
+				</li>
 				<li class="nav-item">
 					<a href="{{ route('admin.products.create') }}" class="nav-link {{ active_link('admin.products.create') }}">
 						<i class="icon-plus-circle2"></i>

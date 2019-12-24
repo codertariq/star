@@ -210,18 +210,18 @@ class BusinessUtil extends Util {
 	 */
 	public function getDetails($business_id) {
 		$details = Business::
-			leftjoin('tax_rates AS TR', 'business.default_sales_tax', 'TR.id')
-			->leftjoin('currencies AS cur', 'business.currency_id', 'cur.id')
+			leftjoin('tax_rates AS TR', 'businesses.default_sales_tax', 'TR.id')
+			->leftjoin('currencies AS cur', 'businesses.currency_id', 'cur.id')
 			->select(
-				'business.*',
+				'businesses.*',
 				'cur.code as currency_code',
 				'cur.symbol as currency_symbol',
 				'thousand_separator',
 				'decimal_separator',
 				'TR.amount AS tax_calculation_amount',
-				'business.default_sales_discount'
+				'businesses.default_sales_discount'
 			)
-			->where('business.id', $business_id)
+			->where('businesses.id', $business_id)
 			->first();
 
 		return $details;

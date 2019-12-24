@@ -14,7 +14,6 @@
 		<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
 		<link href="{{ asset('global_assets/css/icons/icomoon/styles.min.css') }}" rel="stylesheet" type="text/css">
 		<link href="{{ asset('global_assets/css/icons/fontawesome/styles.min.css') }}" rel="stylesheet" type="text/css">
-
 		<link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
 		<link href="{{ asset('assets/css/bootstrap_limitless.min.css') }}" rel="stylesheet" type="text/css">
 		<link href="{{ asset('assets/css/layout.min.css') }}" rel="stylesheet" type="text/css">
@@ -24,7 +23,6 @@
 		<link href="{{ asset('css/parsley.css') }}" rel="stylesheet" type="text/css">
 		<link href="{{ asset('css/date_time_picker.css') }}" rel="stylesheet" type="text/css">
 		@stack('css')
-
 		<script>
 			const BASE_URL = '{{ app_url() }}/';
 			const BASE_ADMIN_URL = '{{ app_url() }}/admin/';
@@ -147,16 +145,16 @@
 			<!-- Main content -->
 			<div class="content-wrapper">
 				@auth()
-				 <!-- Add currency related field-->
-                <input type="hidden" id="__code" value="{{session('currency')['code']}}">
-                <input type="hidden" id="__symbol" value="{{session('currency')['symbol']}}">
-                <input type="hidden" id="__thousand" value="{{session('currency')['thousand_separator']}}">
-                <input type="hidden" id="__decimal" value="{{session('currency')['decimal_separator']}}">
-                <input type="hidden" id="__symbol_placement" value="{{session('business.currency_symbol_placement')}}">
-                <input type="hidden" id="__precision" value="{{config('constants.currency_precision', 2)}}">
-                <input type="hidden" id="__quantity_precision" value="{{config('constants.quantity_precision', 2)}}">
-                <!-- End of currency related field-->
-                @endauth
+				<!-- Add currency related field-->
+				<input type="hidden" id="__code" value="{{session('currency')['code']}}">
+				<input type="hidden" id="__symbol" value="{{session('currency')['symbol']}}">
+				<input type="hidden" id="__thousand" value="{{session('currency')['thousand_separator']}}">
+				<input type="hidden" id="__decimal" value="{{session('currency')['decimal_separator']}}">
+				<input type="hidden" id="__symbol_placement" value="{{session('business.currency_symbol_placement')}}">
+				<input type="hidden" id="__precision" value="{{config('constants.currency_precision', 2)}}">
+				<input type="hidden" id="__quantity_precision" value="{{config('constants.quantity_precision', 2)}}">
+				<!-- End of currency related field-->
+				@endauth
 				@auth()
 				<!-- Page header -->
 				@section('page_header')
@@ -218,19 +216,18 @@
 		</div>
 		<!-- Modal content -->
 		@endif
-
-		 <audio id="success-audio">
-              <source src="{{ asset('/audio/success.ogg') }}" type="audio/ogg">
-              <source src="{{ asset('/audio/success.mp3') }}" type="audio/mpeg">
-            </audio>
-            <audio id="error-audio">
-              <source src="{{ asset('/audio/error.ogg') }}" type="audio/ogg">
-              <source src="{{ asset('/audio/error.mp3') }}" type="audio/mpeg">
-            </audio>
-            <audio id="warning-audio">
-              <source src="{{ asset('/audio/warning.ogg') }}" type="audio/ogg">
-              <source src="{{ asset('/audio/warning.mp3') }}" type="audio/mpeg">
-            </audio>
+		<audio id="success-audio">
+			<source src="{{ asset('/audio/success.ogg') }}" type="audio/ogg">
+			<source src="{{ asset('/audio/success.mp3') }}" type="audio/mpeg">
+		</audio>
+		<audio id="error-audio">
+			<source src="{{ asset('/audio/error.ogg') }}" type="audio/ogg">
+			<source src="{{ asset('/audio/error.mp3') }}" type="audio/mpeg">
+		</audio>
+		<audio id="warning-audio">
+			<source src="{{ asset('/audio/warning.ogg') }}" type="audio/ogg">
+			<source src="{{ asset('/audio/warning.mp3') }}" type="audio/mpeg">
+		</audio>
 		<!-- Core JS files -->
 		<script src="{{ asset('messages.js') }}"></script>
 		<script src="{{ asset('global_assets/js/main/jquery.min.js') }}"></script>
@@ -252,12 +249,53 @@
 		<script src="{{ asset('js/accounting.js') }}"></script>
 		<script src="{{ asset('js/function.js') }}"></script>
 		<script src="{{ asset('js/printthis.js') }}"></script>
+			@php
+    $business_date_format = session('business.date_format');
+    $datepicker_date_format = str_replace('d', 'dd', $business_date_format);
+    $datepicker_date_format = str_replace('m', 'mm', $datepicker_date_format);
+    $datepicker_date_format = str_replace('Y', 'yyyy', $datepicker_date_format);
+
+    $moment_date_format = str_replace('d', 'DD', $business_date_format);
+    $moment_date_format = str_replace('m', 'MM', $moment_date_format);
+    $moment_date_format = str_replace('Y', 'YYYY', $moment_date_format);
+
+    $business_time_format = session('business.time_format');
+    $moment_time_format = 'HH:mm';
+    if($business_time_format == 12){
+        $moment_time_format = 'hh:mm A';
+    }
+
+@endphp
+<script>
+{{-- moment.tz.setDefault('{{ Session::get("business.time_zone") }}'); --}}
+$(document).ready(function(){
+@if(config('app.debug') == false)
+$.fn.dataTable.ext.errMode = 'throw';
+@endif
+});
+var financial_year = {
+	start: moment('{{ Session::get("financial_year.start") }}'),
+	end: moment('{{ Session::get("financial_year.end") }}'),
+}
+{{-- @if(file_exists(public_path('AdminLTE/plugins/select2/lang/' . session()->get('user.language', config('app.locale')) . '.js'))) --}}
+//Default setting for select2
+// $.fn.select2.defaults.set("language", "{{session()->get('user.language', config('app.locale'))}}");
+{{-- @endif --}}
+var datepicker_date_format = "{{$datepicker_date_format}}";
+var moment_date_format = "{{$moment_date_format}}";
+var moment_time_format = "{{$moment_time_format}}";
+var app_locale = "{{session()->get('user.language', config('app.locale'))}}";
+var non_utf8_languages = [
+@foreach(config('constants.non_utf8_languages') as $const)
+"{{$const}}",
+@endforeach
+];
+</script>
 		@if (ANIMATE)
 		<script src="{{ asset('global_assets/js/plugins/velocity/velocity.min.js') }}"></script>
 		<script src="{{ asset('global_assets/js/plugins/velocity/velocity.ui.min.js') }}"></script>
 		<script src="{{ asset('global_assets/js/plugins/ui/prism.min.js') }}"></script>
 		<script src="{{ asset('js/animations.js') }}"></script>
-
 		@endif
 		<!-- /core JS files -->
 		@if (gv($data['attribute'], 'list'))
